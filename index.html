@@ -5,8 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Allocation Tool</title>
     <style>
+.info-box {
+    background-color: #e3f2fd;
+    border: 1px solid #2196F3;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
 
-        
+.error-message {
+    color: #f44336;
+    text-align: center;
+    margin: 10px 0;
+    font-weight: bold;
+    display: none;
+}        
         :root {
             --primary-color: #333333;
             --font-size: 16px;
@@ -245,9 +260,14 @@
 </head>
 <body>
     <div class="landing">
-        <h1>Time Allocation Tool</h1>
-        <button class="start-btn" onclick="startTool()">Start</button>
+    <h1>Time Allocation Tool</h1>
+    <div class="info-box">
+        <strong>Important Information:</strong>
+        <p>There are 168 hours in a week (24 hours × 7 days). Please allocate all 168 hours across your activities. The calculator will help you track the total and ensure you've accounted for all hours in your week.</p>
+        <p>Current Total: <span id="totalHoursSpent">0</span>/168 hours</p>
     </div>
+    <button class="start-btn" onclick="startTool()">Start</button>
+</div>
 
     <div id="content" class="content">
         <div class="row">
@@ -352,7 +372,9 @@
                 </div>
             </div>
         </div>
-
+<div id="error-message" class="error-message">
+    Please allocate exactly 168 hours. You cannot proceed until all hours are accounted for.
+</div>
         <button class="calculate-btn" onclick="calculateResults()">Calculate and See Results</button>
     </div>
 
@@ -367,94 +389,149 @@
     </div>
 
     <script>
-        function startTool() {
-            document.getElementById('content').style.display = 'block';
-            document.querySelector('.landing').style.display = 'none';
+       function startTool() {
+    document.getElementById('content').style.display = 'block';
+    document.querySelector('.landing').style.display = 'none';
+}
+
+function updateTotal() {
+    const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
+        .reduce((sum, input) => sum + Number(input.value), 0);
+    
+    const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
+        .reduce((sum, input) => sum + Number(input.value), 0);
+    
+    const fixed = Array.from(document.querySelectorAll('.fixed-activities input[type="number"]'))
+        .reduce((sum, input) => sum + Number(input.value), 0);
+
+    const total = investments + distractions + fixed;
+    document.getElementById('totalHoursSpent').textContent = total;
+    
+    const errorMessage = document.getElementById('error-message');
+    const calculateBtn = document.querySelector('.calculate-btn');
+    
+    if (total !== 168) {
+        errorMessage.style.display = 'block';
+        calculateBtn.disabled = true;
+        calculateBtn.style.opacity = '0.5';
+        if (total > 168) {
+            errorMessage.textContent = `You've allocated ${total} hours. Please reduce by ${total - 168} hours to proceed.`;
+        } else {
+            errorMessage.textContent = `You've allocated ${total} hours. Please add ${168 - total} more hours to proceed.`;
         }
+    } else {
+        errorMessage.style.display = 'none';
+        calculateBtn.disabled = false;
+        calculateBtn.style.opacity = '1';
+    }
+}
 
-        function addNewActivity(listId) {
-            const list = document.getElementById(listId);
-            const newBox = document.createElement('div');
-            newBox.className = 'activity-box';
-            
-            const input = document.createElement('div');
-            input.className = 'activity-input';
-            
-            input.innerHTML = `
-                <input type="text" placeholder="Enter activity name" style="font-size: var(--font-size);">
-                <input type="number" min="0" max="168" value="0" style="font-size: var(--font-size);">
-                <span style="font-size: var(--font-size);">hours/week</span>
-            `;
-            
-            newBox.appendChild(input);
-            list.appendChild(newBox);
-        }
-
-        function calculateResults() {
-            // Calculate total hours for each category
-            const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
-                .reduce((sum, input) => sum + Number(input.value), 0);
-            
-            const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
-                .reduce((sum, input) => sum + Number(input.value), 0);
-            
-            const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
-            const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
-            
-            const total = 168; // Total hours in a week
-            const unaccounted = total - (investments + distractions + sleep + work);
-
-            // Calculate percentages
-            const percentages = {
-                investments: (investments / total) * 100,
-                distractions: (distractions / total) * 100,
-                sleep: (sleep / total) * 100,
-                work: (work / total) * 100,
-                unaccounted: (unaccounted / total) * 100
-            };
-
-            // Update progress bar
-            const timeBar = document.getElementById('timeBar');
-            timeBar.innerHTML = '';
-            
-            const colors = {
-                investments: '#4CAF50',
-                distractions: '#f44336',
-                sleep: '#2196F3',
-                work: '#FFC107',
-                unaccounted: '#9E9E9E'
-            };
-
-            Object.entries(percentages).forEach(([category, percentage]) => {
-                if (percentage > 0) {
-                    const segment = document.createElement('div');
-                    segment.className = 'progress-segment';
-                    segment.style.width = `${percentage}%`;
-                    segment.style.backgroundColor = colors[category];
-                    segment.textContent = `${category}: ${percentage.toFixed(1)}%`;
-                    timeBar.appendChild(segment);
-                }
-            });
-
-            // Generate insight
-            const ratio = distractions / investments;
-            const insight = document.getElementById('insight');
-            if (distractions > investments) {
-                insight.textContent = `You spend ${ratio.toFixed(1)} times more time on distractions than investments.`;
-            } else if (investments > distractions) {
-                insight.textContent = `You spend ${(1/ratio).toFixed(1)} times more time on investments than distractions.`;
-            } else {
-                insight.textContent = `Your time is equally split between investments and distractions.`;
+document.addEventListener('DOMContentLoaded', function() {
+    const allInputs = document.querySelectorAll('input[type="number"]');
+    allInputs.forEach(input => {
+        input.setAttribute('max', '168');
+        input.addEventListener('input', function() {
+            if (this.value > 168) {
+                this.value = 168;
             }
+            if (this.value < 0) {
+                this.value = 0;
+            }
+            updateTotal();
+        });
+    });
+    updateTotal();
+});
 
-            // Show results
-            document.getElementById('results').style.display = 'block';
-            document.getElementById('content').style.display = 'none';
+function addNewActivity(listId) {
+    const list = document.getElementById(listId);
+    const newBox = document.createElement('div');
+    newBox.className = 'activity-box';
+    
+    const input = document.createElement('div');
+    input.className = 'activity-input';
+    
+    input.innerHTML = `
+        <input type="text" placeholder="Enter activity name" style="font-size: var(--font-size);">
+        <input type="number" min="0" max="168" value="0" style="font-size: var(--font-size);">
+        <span style="font-size: var(--font-size);">hours/week</span>
+    `;
+    
+    newBox.appendChild(input);
+    list.appendChild(newBox);
+    
+    const numberInput = input.querySelector('input[type="number"]');
+    numberInput.addEventListener('input', function() {
+        if (this.value > 168) {
+            this.value = 168;
         }
+        if (this.value < 0) {
+            this.value = 0;
+        }
+        updateTotal();
+    });
+}
 
-        // Add these new functions
+function calculateResults() {
+    const total = Number(document.getElementById('totalHoursSpent').textContent);
+    if (total !== 168) {
+        return;
+    }
+
+    const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
+        .reduce((sum, input) => sum + Number(input.value), 0);
+    
+    const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
+        .reduce((sum, input) => sum + Number(input.value), 0);
+    
+    const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
+    const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
+    
+    const percentages = {
+        investments: (investments / 168) * 100,
+        distractions: (distractions / 168) * 100,
+        sleep: (sleep / 168) * 100,
+        work: (work / 168) * 100
+    };
+
+    const timeBar = document.getElementById('timeBar');
+    timeBar.innerHTML = '';
+    
+    const colors = {
+        investments: '#4CAF50',
+        distractions: '#f44336',
+        sleep: '#2196F3',
+        work: '#FFC107'
+    };
+
+    Object.entries(percentages).forEach(([category, percentage]) => {
+        if (percentage > 0) {
+            const segment = document.createElement('div');
+            segment.className = 'progress-segment';
+            segment.style.width = `${percentage}%`;
+            segment.style.backgroundColor = colors[category];
+            segment.textContent = `${category}: ${percentage.toFixed(1)}%`;
+            timeBar.appendChild(segment);
+        }
+    });
+
+    const ratio = distractions / investments;
+    const insight = document.getElementById('insight');
+    if (distractions > investments) {
+        insight.textContent = `You spend ${ratio.toFixed(1)} times more time on distractions than investments.`;
+    } else if (investments > distractions) {
+        insight.textContent = `You spend ${(1/ratio).toFixed(1)} times more time on investments than distractions.`;
+    } else {
+        insight.textContent = `Your time is equally split between investments and distractions.`;
+    }
+
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('content').style.display = 'none';
+    
+    createTimeVisualization();
+}
+
 function createTimeVisualization() {
-    // Collect data from inputs
     function collectData() {
         const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
             .map(box => ({
@@ -486,16 +563,13 @@ function createTimeVisualization() {
     }
 
     const data = collectData();
-    const totalHours = data.reduce((sum, item) => sum + item.value, 0);
     
-    // Color schemes
     const colors = {
         Investments: '#4CAF50',
         Distractions: '#f44336',
         Fixed: '#2196F3'
     };
 
-    // Create treemap
     const treemap = document.getElementById('timeTreemap');
     treemap.innerHTML = `
         <h2 style="padding: 15px; margin: 0;">Time Distribution</h2>
@@ -511,10 +585,10 @@ function createTimeVisualization() {
             ${data.map(item => `
                 <div class="time-box" style="background: ${colors[item.category]}; flex: ${item.value};">
                     <h3>${item.name}</h3>
-                    <p>${item.value}h (${((item.value/totalHours)*100).toFixed(1)}%)</p>
+                    <p>${item.value}h (${((item.value/168)*100).toFixed(1)}%)</p>
                     <div class="percentage-bar">
                         <div class="percentage-fill" 
-                             style="width: ${(item.value/totalHours)*100}%; background: rgba(255,255,255,0.3)">
+                             style="width: ${(item.value/168)*100}%; background: rgba(255,255,255,0.3)">
                         </div>
                     </div>
                 </div>
@@ -522,20 +596,18 @@ function createTimeVisualization() {
         </div>
     `;
 
-    // Calculate category totals and create insights
     const categoryTotals = data.reduce((acc, item) => {
         acc[item.category] = (acc[item.category] || 0) + item.value;
         return acc;
     }, {});
 
     const insights = document.getElementById('timeInsights');
-    insights.innerHTML = generateInsights(data, categoryTotals, totalHours);
+    insights.innerHTML = generateInsights(data, categoryTotals);
 }
 
-function generateInsights(data, categoryTotals, totalHours) {
+function generateInsights(data, categoryTotals) {
     const insights = [];
     
-    // Investment to distraction ratio
     const investmentRatio = categoryTotals['Investments'] / categoryTotals['Distractions'];
     if (investmentRatio > 1) {
         insights.push(`You're investing ${investmentRatio.toFixed(1)}x more time than spending on distractions - great balance!`);
@@ -543,11 +615,8 @@ function generateInsights(data, categoryTotals, totalHours) {
         insights.push(`Consider rebalancing your time - currently spending ${(1/investmentRatio).toFixed(1)}x more time on distractions than investments.`);
     }
 
-    // Time utilization
-    const utilisationRate = (totalHours / 168) * 100;
-    insights.push(`Your time utilization rate is ${utilisationRate.toFixed(1)}% of the week.`);
+    insights.push(`You have successfully allocated all 168 hours of your week.`);
 
-    // Highest time activities
     const topActivities = [...data].sort((a, b) => b.value - a.value).slice(0, 3);
     insights.push(`Your top time commitments are: ${topActivities.map(a => `${a.name} (${a.value}h)`).join(', ')}`);
 
@@ -557,16 +626,12 @@ function generateInsights(data, categoryTotals, totalHours) {
             ${Object.entries(categoryTotals).map(([category, hours]) => `
                 <div class="metric">
                     <span>${category}</span>
-                    <span>${hours}h (${((hours/totalHours)*100).toFixed(1)}%)</span>
+                    <span>${hours}h (${((hours/168)*100).toFixed(1)}%)</span>
                 </div>
             `).join('')}
             <div class="metric" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                <strong>Total Tracked Time</strong>
-                <strong>${totalHours}h</strong>
-            </div>
-            <div class="metric">
-                <span>Untracked Time</span>
-                <span>${168 - totalHours}h</span>
+                <strong>Total Time</strong>
+                <strong>168h</strong>
             </div>
         </div>
         <div class="summary" style="margin-top: 15px;">
@@ -576,14 +641,6 @@ function generateInsights(data, categoryTotals, totalHours) {
     `;
 }
 
-// Modify your existing calculateResults function
-const originalCalculateResults = window.calculateResults;
-window.calculateResults = function() {
-    originalCalculateResults();
-    createTimeVisualization();
-};
-
-// Add window resize handler
 window.addEventListener('resize', () => {
     if (document.getElementById('results').style.display === 'block') {
         createTimeVisualization();
