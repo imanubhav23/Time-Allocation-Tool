@@ -6,11 +6,78 @@
     <title>Time Allocation Tool</title>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <style>
-        /* (Keep your existing styles) */
+        /* Basic Styling */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .landing {
+            text-align: center;
+        }
+        .progress-bar {
+            display: flex;
+            height: 30px;
+            margin-top: 20px;
+        }
+        .progress-segment {
+            text-align: center;
+            color: white;
+            padding: 5px 10px;
+        }
+        .results {
+            display: none;
+        }
+        .view-insights-btn {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #sankey-diagram {
+            width: 100%;
+            height: 400px;
+            margin-top: 30px;
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <!-- Existing HTML content -->
+    <div class="landing">
+        <h1>Time Allocation Tool</h1>
+        <button onclick="startTool()">Start Tool</button>
+    </div>
+
+    <div id="content" class="content" style="display:none;">
+        <h2>Track Your Weekly Time</h2>
+        
+        <div id="investments-list">
+            <h3>Investments</h3>
+            <div class="activity-box">
+                <div class="activity-input">
+                    <input type="number" min="0" max="168" value="0" placeholder="Investments Hours" id="investments">
+                    <span>hours/week</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="distractions-list">
+            <h3>Distractions</h3>
+            <div class="activity-box">
+                <div class="activity-input">
+                    <input type="number" min="0" max="168" value="0" placeholder="Distractions Hours" id="distractions">
+                    <span>hours/week</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="fixed-activities">
+            <h3>Fixed Activities</h3>
+            <label>Sleep (56 hours): <input type="number" id="sleep" value="56" disabled></label>
+            <label>Work (40 hours): <input type="number" id="work" value="40" disabled></label>
+        </div>
+
+        <button onclick="calculateResults()">Calculate Results</button>
+    </div>
 
     <div id="results" class="results">
         <h2>Your Time Allocation Results</h2>
@@ -19,50 +86,25 @@
         <button class="view-insights-btn" onclick="viewInsights()">View Insights</button>
     </div>
 
-    <!-- Add the Sankey diagram container -->
-    <div id="sankey-diagram" style="width: 100%; height: 400px; display: none;"></div>
+    <div id="sankey-diagram"></div>
 
     <script>
         google.charts.load('current', {packages: ['sankey']});
-        
+
         function startTool() {
             document.getElementById('content').style.display = 'block';
             document.querySelector('.landing').style.display = 'none';
         }
 
-        function addNewActivity(listId) {
-            const list = document.getElementById(listId);
-            const newBox = document.createElement('div');
-            newBox.className = 'activity-box';
-            
-            const input = document.createElement('div');
-            input.className = 'activity-input';
-            
-            input.innerHTML = `
-                <input type="text" placeholder="Enter activity name" style="font-size: var(--font-size);">
-                <input type="number" min="0" max="168" value="0" style="font-size: var(--font-size);">
-                <span style="font-size: var(--font-size);">hours/week</span>
-            `;
-            
-            newBox.appendChild(input);
-            list.appendChild(newBox);
-        }
-
         function calculateResults() {
-            // Calculate total hours for each category
-            const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
-                .reduce((sum, input) => sum + Number(input.value), 0);
-            
-            const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
-                .reduce((sum, input) => sum + Number(input.value), 0);
-            
-            const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
-            const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
-            
+            const investments = parseInt(document.getElementById('investments').value);
+            const distractions = parseInt(document.getElementById('distractions').value);
+            const sleep = parseInt(document.getElementById('sleep').value);
+            const work = parseInt(document.getElementById('work').value);
+
             const total = 168; // Total hours in a week
             const unaccounted = total - (investments + distractions + sleep + work);
 
-            // Calculate percentages
             const percentages = {
                 investments: (investments / total) * 100,
                 distractions: (distractions / total) * 100,
@@ -74,7 +116,7 @@
             // Update progress bar
             const timeBar = document.getElementById('timeBar');
             timeBar.innerHTML = '';
-            
+
             const colors = {
                 investments: '#4CAF50',
                 distractions: '#f44336',
@@ -105,18 +147,16 @@
                 insight.textContent = `Your time is equally split between investments and distractions.`;
             }
 
-            // Show results and button to view insights
+            // Show results
             document.getElementById('results').style.display = 'block';
             document.getElementById('content').style.display = 'none';
         }
 
         function viewInsights() {
-            const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
-                .reduce((sum, input) => sum + Number(input.value), 0);
-            const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
-                .reduce((sum, input) => sum + Number(input.value), 0);
-            const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
-            const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
+            const investments = parseInt(document.getElementById('investments').value);
+            const distractions = parseInt(document.getElementById('distractions').value);
+            const sleep = parseInt(document.getElementById('sleep').value);
+            const work = parseInt(document.getElementById('work').value);
 
             // Prepare data for Sankey diagram
             const data = new google.visualization.DataTable();
@@ -124,7 +164,7 @@
             data.addColumn('string', 'To');
             data.addColumn('number', 'Hours');
 
-            // Add flows (Here we divide the activities into categories)
+            // Add flows (These could be better optimized to show activities more meaningfully)
             data.addRows([
                 ['Investments', 'Sleep', sleep],
                 ['Investments', 'Work', work],
