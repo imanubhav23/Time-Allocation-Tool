@@ -5,7 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Allocation Tool</title>
     <style>
-.info-box {
+        .graph-container {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.area-chart {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    margin-top: 20px;
+    padding: 20px 40px 40px 60px;
+}
+
+.chart-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.area-path {
+    fill-opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.area-path:hover {
+    fill-opacity: 0.8;
+}
+
+.axis-line {
+    stroke: #ddd;
+    stroke-width: 1;
+}
+
+.axis-label {
+    font-size: 12px;
+    fill: #666;
+}
+
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.legend-color {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+}.info-box {
     background-color: #e3f2fd;
     border: 1px solid #2196F3;
     border-radius: 5px;
@@ -385,6 +445,12 @@
         <div class="viz-container">
     <div class="treemap" id="timeTreemap"></div>
 </div>
+<div class="graph-container">
+    <h3>Time Distribution Area Chart</h3>
+    <div class="area-chart" id="timeAreaChart"></div>
+    <div class="chart-legend" id="chartLegend"></div>
+</div>
+
 <div class="insights" id="timeInsights"></div>
     </div>
 
@@ -646,6 +712,142 @@ window.addEventListener('resize', () => {
         createTimeVisualization();
     }
 });
+function createAreaChart(data) {
+    const container = document.getElementById('timeAreaChart');
+    const width = container.clientWidth - 100; // Adjust for padding
+    const height = container.clientHeight - 60; // Adjust for padding
+    
+    // Group data by category
+    const categories = ['Investments', 'Distractions', 'Fixed'];
+    const categoryColors = {
+        'Investments': '#4CAF50',
+        'Distractions': '#f44336',
+        'Fixed': '#2196F3'
+    };
+    
+    // Create time points (0 to 24 hours)
+    const timePoints = Array.from({length: 25}, (_, i) => i);
+    
+    // Create stacked data
+    const stackedData = timePoints.map(hour => {
+        const point = { hour };
+        let cumulative = 0;
+        
+        categories.forEach(category => {
+            const categoryItems = data.filter(item => item.category === category);
+            const categoryValue = categoryItems.reduce((sum, item) => {
+                // Distribute hours evenly across 24 hours
+                return sum + (item.value / 24);
+            }, 0);
+            
+            point[category + 'Start'] = cumulative;
+            cumulative += categoryValue;
+            point[category + 'End'] = cumulative;
+        });
+        
+        return point;
+    });
+    
+    // Create SVG
+    container.innerHTML = `
+        <svg class="chart-svg" viewBox="0 0 ${width} ${height}">
+            <!-- Y-axis -->
+            ${Array.from({length: 6}, (_, i) => {
+                const y = height - (height * i / 5);
+                const value = (7 * i).toFixed(1);
+                return `
+                    <line class="axis-line" x1="0" y1="${y}" x2="${width}" y2="${y}" />
+                    <text class="axis-label" x="-10" y="${y}" text-anchor="end" dominant-baseline="middle">
+                        ${value}h
+                    </text>
+                `;
+            }).join('')}
+            
+            <!-- X-axis -->
+            ${Array.from({length: 13}, (_, i) => {
+                const x = (width * i / 12);
+                return `
+                    <line class="axis-line" x1="${x}" y1="0" x2="${x}" y2="${height}" />
+                    <text class="axis-label" x="${x}" y="${height + 20}" text-anchor="middle">
+                        ${i * 2}:00
+                    </text>
+                `;
+            }).join('')}
+            
+            <!-- Area paths -->
+            ${categories.map(category => {
+                const points = stackedData.map(point => {
+                    const x = (point.hour / 24) * width;
+                    const yStart = height - (point[category + 'Start'] / 7) * height;
+                    const yEnd = height - (point[category + 'End'] / 7) * height;
+                    return { x, yStart, yEnd };
+                });
+                
+                const pathD = `
+                    M ${points[0].x} ${points[0].yEnd}
+                    ${points.map(p => `L ${p.x} ${p.yEnd}`).join(' ')}
+                    L ${points[points.length-1].x} ${points[points.length-1].yStart}
+                    ${points.reverse().map(p => `L ${p.x} ${p.yStart}`).join(' ')}
+                    Z
+                `;
+                
+                return `
+                    <path class="area-path" d="${pathD}" 
+                          fill="${categoryColors[category]}"
+                          data-category="${category}">
+                        <title>${category}</title>
+                    </path>
+                `;
+            }).join('')}
+        </svg>
+    `;
+    
+    // Create legend
+    const legend = document.getElementById('chartLegend');
+    legend.innerHTML = categories.map(category => `
+        <div class="legend-item" data-category="${category}">
+            <div class="legend-color" style="background: ${categoryColors[category]}"></div>
+            <span>${category}</span>
+        </div>
+    `).join('');
+    
+    // Add legend interactivity
+    legend.querySelectorAll('.legend-item').forEach(item => {
+        item.addEventListener('mouseover', () => {
+            const category = item.dataset.category;
+            container.querySelectorAll('.area-path').forEach(path => {
+                if (path.dataset.category !== category) {
+                    path.style.fillOpacity = '0.2';
+                }
+            });
+        });
+        
+        item.addEventListener('mouseout', () => {
+            container.querySelectorAll('.area-path').forEach(path => {
+                path.style.fillOpacity = '0.6';
+            });
+        });
+    });
+}
+
+// Update the window resize handler
+window.addEventListener('resize', () => {
+    if (document.getElementById('results').style.display === 'block') {
+        createTimeVisualization();
+        createAreaChart(collectData());
+    }
+});
+
+// Update calculateResults to include the area chart
+function calculateResults() {
+    // ... existing code ...
+    
+    const data = collectData();
+    createEnhancedVisualizations(data);
+    createAreaChart(data);
+    
+    // ... rest of existing code ...
+}        
     </script>
 </body>
 </html>
