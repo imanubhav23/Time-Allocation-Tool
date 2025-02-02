@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Allocation Tool</title>
     <style>
+
+        
         :root {
             --primary-color: #333333;
             --font-size: 16px;
@@ -138,6 +140,107 @@
             background-color: #f5f5f5;
             border-radius: 5px;
         }
+
+    .viz-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .treemap {
+        flex: 2;
+        min-width: 300px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .time-box {
+        position: relative;
+        border-radius: 4px;
+        padding: 8px;
+        margin: 4px;
+        color: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .time-box:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .time-box h3 {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .time-box p {
+        margin: 4px 0 0 0;
+        font-size: 12px;
+    }
+
+    .insights {
+        padding: 20px;
+        background: #f5f5f5;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 10px 0;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+    }
+
+    .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+    }
+
+    .percentage-bar {
+        height: 4px;
+        background: #eee;
+        border-radius: 2px;
+        margin-top: 4px;
+    }
+
+    .percentage-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.3s ease;
+    }
+
+    .summary {
+        margin-top: 20px;
+        padding: 15px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .summary h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+    }
+
+    .metric {
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 0;
+        font-size: 14px;
+    }
+        
     </style>
 </head>
 <body>
@@ -257,6 +360,10 @@
         <h2>Your Time Allocation Results</h2>
         <div class="progress-bar" id="timeBar"></div>
         <div class="insight" id="insight"></div>
+        <div class="viz-container">
+    <div class="treemap" id="timeTreemap"></div>
+</div>
+<div class="insights" id="timeInsights"></div>
     </div>
 
     <script>
@@ -344,6 +451,144 @@
             document.getElementById('results').style.display = 'block';
             document.getElementById('content').style.display = 'none';
         }
+
+        // Add these new functions
+function createTimeVisualization() {
+    // Collect data from inputs
+    function collectData() {
+        const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
+            .map(box => ({
+                name: box.querySelector('label')?.textContent.replace(':', '') || 
+                      box.querySelector('input[type="text"]')?.value || 'Other',
+                value: Number(box.querySelector('input[type="number"]').value),
+                category: 'Investments'
+            }))
+            .filter(item => item.value > 0);
+
+        const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
+            .map(box => ({
+                name: box.querySelector('label')?.textContent.replace(':', '') || 
+                      box.querySelector('input[type="text"]')?.value || 'Other',
+                value: Number(box.querySelector('input[type="number"]').value),
+                category: 'Distractions'
+            }))
+            .filter(item => item.value > 0);
+
+        const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
+            .map(box => ({
+                name: box.querySelector('label').textContent.replace(':', ''),
+                value: Number(box.querySelector('input[type="number"]').value),
+                category: 'Fixed'
+            }))
+            .filter(item => item.value > 0);
+
+        return [...investments, ...distractions, ...fixed];
+    }
+
+    const data = collectData();
+    const totalHours = data.reduce((sum, item) => sum + item.value, 0);
+    
+    // Color schemes
+    const colors = {
+        Investments: '#4CAF50',
+        Distractions: '#f44336',
+        Fixed: '#2196F3'
+    };
+
+    // Create treemap
+    const treemap = document.getElementById('timeTreemap');
+    treemap.innerHTML = `
+        <h2 style="padding: 15px; margin: 0;">Time Distribution</h2>
+        <div class="legend">
+            ${Object.entries(colors).map(([category, color]) => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${color}"></div>
+                    <span>${category}</span>
+                </div>
+            `).join('')}
+        </div>
+        <div style="display: flex; flex-wrap: wrap; padding: 15px;">
+            ${data.map(item => `
+                <div class="time-box" style="background: ${colors[item.category]}; flex: ${item.value};">
+                    <h3>${item.name}</h3>
+                    <p>${item.value}h (${((item.value/totalHours)*100).toFixed(1)}%)</p>
+                    <div class="percentage-bar">
+                        <div class="percentage-fill" 
+                             style="width: ${(item.value/totalHours)*100}%; background: rgba(255,255,255,0.3)">
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    // Calculate category totals and create insights
+    const categoryTotals = data.reduce((acc, item) => {
+        acc[item.category] = (acc[item.category] || 0) + item.value;
+        return acc;
+    }, {});
+
+    const insights = document.getElementById('timeInsights');
+    insights.innerHTML = generateInsights(data, categoryTotals, totalHours);
+}
+
+function generateInsights(data, categoryTotals, totalHours) {
+    const insights = [];
+    
+    // Investment to distraction ratio
+    const investmentRatio = categoryTotals['Investments'] / categoryTotals['Distractions'];
+    if (investmentRatio > 1) {
+        insights.push(`You're investing ${investmentRatio.toFixed(1)}x more time than spending on distractions - great balance!`);
+    } else if (investmentRatio < 1) {
+        insights.push(`Consider rebalancing your time - currently spending ${(1/investmentRatio).toFixed(1)}x more time on distractions than investments.`);
+    }
+
+    // Time utilization
+    const utilisationRate = (totalHours / 168) * 100;
+    insights.push(`Your time utilization rate is ${utilisationRate.toFixed(1)}% of the week.`);
+
+    // Highest time activities
+    const topActivities = [...data].sort((a, b) => b.value - a.value).slice(0, 3);
+    insights.push(`Your top time commitments are: ${topActivities.map(a => `${a.name} (${a.value}h)`).join(', ')}`);
+
+    return `
+        <div class="summary">
+            <h3>Weekly Overview</h3>
+            ${Object.entries(categoryTotals).map(([category, hours]) => `
+                <div class="metric">
+                    <span>${category}</span>
+                    <span>${hours}h (${((hours/totalHours)*100).toFixed(1)}%)</span>
+                </div>
+            `).join('')}
+            <div class="metric" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                <strong>Total Tracked Time</strong>
+                <strong>${totalHours}h</strong>
+            </div>
+            <div class="metric">
+                <span>Untracked Time</span>
+                <span>${168 - totalHours}h</span>
+            </div>
+        </div>
+        <div class="summary" style="margin-top: 15px;">
+            <h3>Key Insights</h3>
+            ${insights.map(insight => `<p style="margin: 10px 0;">${insight}</p>`).join('')}
+        </div>
+    `;
+}
+
+// Modify your existing calculateResults function
+const originalCalculateResults = window.calculateResults;
+window.calculateResults = function() {
+    originalCalculateResults();
+    createTimeVisualization();
+};
+
+// Add window resize handler
+window.addEventListener('resize', () => {
+    if (document.getElementById('results').style.display === 'block') {
+        createTimeVisualization();
+    }
+});
     </script>
 </body>
 </html>
