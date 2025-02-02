@@ -1,265 +1,349 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Allocation Tool</title>
     <style>
-        .viz-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+        :root {
+            --primary-color: #333333;
+            --font-size: 16px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
+            color: var(--primary-color);
+            font-size: var(--font-size);
         }
 
-        .treemap {
-            flex: 2;
-            min-width: 300px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        h1, h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            text-align: center;
         }
 
-        .donut-chart {
-            flex: 1;
-            min-width: 250px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .landing {
+            text-align: center;
+            padding: 50px 0;
         }
 
-        .time-box {
-            position: relative;
-            border-radius: 4px;
-            padding: 8px;
-            margin: 4px;
+        .start-btn, .calculate-btn {
+            padding: 15px 30px;
+            font-size: var(--font-size);
+            background-color: #4CAF50;
             color: white;
-            transition: all 0.3s ease;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            display: block;
+            margin: 20px auto;
         }
 
-        .time-box:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        .content, .results {
+            display: none;
+            margin-top: 50px;
         }
 
-        .time-box h3 {
-            margin: 0;
-            font-size: 14px;
-        }
-
-        .time-box p {
-            margin: 4px 0 0 0;
-            font-size: 12px;
-        }
-
-        .insights {
-            padding: 20px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 10px 0;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-        }
-
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
-        }
-
-        .percentage-bar {
-            height: 4px;
-            background: #eee;
-            border-radius: 2px;
-            margin-top: 4px;
-        }
-
-        .percentage-fill {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        .summary {
-            margin-top: 20px;
-            padding: 15px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .summary h3 {
-            margin: 0 0 10px 0;
-            color: #333;
-        }
-
-        .metric {
+        .row {
             display: flex;
             justify-content: space-between;
-            margin: 5px 0;
+            gap: 30px;
+        }
+
+        .column {
+            flex: 1;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .activity-box {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .activity-input {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="number"], input[type="text"] {
+            padding: 5px;
+            font-size: var(--font-size);
+            color: var(--primary-color);
+        }
+
+        .add-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: var(--font-size);
+        }
+
+        label {
+            font-weight: bold;
+            font-size: var(--font-size);
+            color: var(--primary-color);
+        }
+
+        span {
+            font-size: var(--font-size);
+            color: var(--primary-color);
+        }
+
+        .fixed-activities {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            margin: 20px 0;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 30px;
+            display: flex;
+        }
+
+        .progress-segment {
+            height: 100%;
+            display: inline-block;
+            text-align: center;
+            color: white;
+            line-height: 30px;
             font-size: 14px;
+        }
+
+        .insight {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <!-- Add this to your results section -->
-    <div class="viz-container">
-        <div class="treemap" id="timeTreemap"></div>
-        <div class="donut-chart" id="categoryDonut"></div>
+    <div class="landing">
+        <h1>Time Allocation Tool</h1>
+        <button class="start-btn" onclick="startTool()">Start</button>
     </div>
-    <div class="insights" id="timeInsights"></div>
+
+    <div id="content" class="content">
+        <div class="row">
+            <div class="column">
+                <h2>Investments</h2>
+                <div id="investments-list">
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Friends/Family Time:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Exercise:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Learning:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Personal Development:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Work/Career:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addNewActivity('investments-list')">+ Add Investment</button>
+            </div>
+
+            <div class="column">
+                <h2>Distractions</h2>
+                <div id="distractions-list">
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Social Media:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Streaming Services:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Gaming:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Mindless Browsing:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Procrastination:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addNewActivity('distractions-list')">+ Add Distraction</button>
+            </div>
+        </div>
+
+        <div class="fixed-activities">
+            <div class="activity-box">
+                <div class="activity-input">
+                    <label>Sleep:</label>
+                    <input type="number" min="0" max="168" value="56">
+                    <span>hours/week</span>
+                </div>
+            </div>
+            <div class="activity-box">
+                <div class="activity-input">
+                    <label>Work:</label>
+                    <input type="number" min="0" max="168" value="40">
+                    <span>hours/week</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateResults()">Calculate and See Results</button>
+    </div>
+
+    <div id="results" class="results">
+        <h2>Your Time Allocation Results</h2>
+        <div class="progress-bar" id="timeBar"></div>
+        <div class="insight" id="insight"></div>
+    </div>
 
     <script>
-        function createTimeVisualization() {
-            // Collect data from inputs
-            function collectData() {
-                const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
-                    .map(box => ({
-                        name: box.querySelector('label')?.textContent.replace(':', '') || 
-                              box.querySelector('input[type="text"]')?.value || 'Other',
-                        value: Number(box.querySelector('input[type="number"]').value),
-                        category: 'Investments'
-                    }))
-                    .filter(item => item.value > 0);
+        function startTool() {
+            document.getElementById('content').style.display = 'block';
+            document.querySelector('.landing').style.display = 'none';
+        }
 
-                const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
-                    .map(box => ({
-                        name: box.querySelector('label')?.textContent.replace(':', '') || 
-                              box.querySelector('input[type="text"]')?.value || 'Other',
-                        value: Number(box.querySelector('input[type="number"]').value),
-                        category: 'Distractions'
-                    }))
-                    .filter(item => item.value > 0);
-
-                const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
-                    .map(box => ({
-                        name: box.querySelector('label').textContent.replace(':', ''),
-                        value: Number(box.querySelector('input[type="number"]').value),
-                        category: 'Fixed'
-                    }))
-                    .filter(item => item.value > 0);
-
-                return [...investments, ...distractions, ...fixed];
-            }
-
-            const data = collectData();
-            const totalHours = data.reduce((sum, item) => sum + item.value, 0);
+        function addNewActivity(listId) {
+            const list = document.getElementById(listId);
+            const newBox = document.createElement('div');
+            newBox.className = 'activity-box';
             
-            // Color schemes
-            const colors = {
-                Investments: '#4CAF50',
-                Distractions: '#f44336',
-                Fixed: '#2196F3'
+            const input = document.createElement('div');
+            input.className = 'activity-input';
+            
+            input.innerHTML = `
+                <input type="text" placeholder="Enter activity name" style="font-size: var(--font-size);">
+                <input type="number" min="0" max="168" value="0" style="font-size: var(--font-size);">
+                <span style="font-size: var(--font-size);">hours/week</span>
+            `;
+            
+            newBox.appendChild(input);
+            list.appendChild(newBox);
+        }
+
+        function calculateResults() {
+            // Calculate total hours for each category
+            const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
+                .reduce((sum, input) => sum + Number(input.value), 0);
+            
+            const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
+                .reduce((sum, input) => sum + Number(input.value), 0);
+            
+            const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
+            const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
+            
+            const total = 168; // Total hours in a week
+            const unaccounted = total - (investments + distractions + sleep + work);
+
+            // Calculate percentages
+            const percentages = {
+                investments: (investments / total) * 100,
+                distractions: (distractions / total) * 100,
+                sleep: (sleep / total) * 100,
+                work: (work / total) * 100,
+                unaccounted: (unaccounted / total) * 100
             };
 
-            // Create treemap
-            const treemap = document.getElementById('timeTreemap');
-            treemap.innerHTML = `
-                <h2 style="padding: 15px; margin: 0;">Time Distribution</h2>
-                <div class="legend">
-                    ${Object.entries(colors).map(([category, color]) => `
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: ${color}"></div>
-                            <span>${category}</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div style="display: flex; flex-wrap: wrap; padding: 15px;">
-                    ${data.map(item => `
-                        <div class="time-box" style="background: ${colors[item.category]}; flex: ${item.value};">
-                            <h3>${item.name}</h3>
-                            <p>${item.value}h (${((item.value/totalHours)*100).toFixed(1)}%)</p>
-                            <div class="percentage-bar">
-                                <div class="percentage-fill" 
-                                     style="width: ${(item.value/totalHours)*100}%; background: rgba(255,255,255,0.3)">
-                                </div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-
-            // Calculate category totals
-            const categoryTotals = data.reduce((acc, item) => {
-                acc[item.category] = (acc[item.category] || 0) + item.value;
-                return acc;
-            }, {});
-
-            // Create insights
-            const insights = document.getElementById('timeInsights');
-            insights.innerHTML = `
-                <h2>Time Insights</h2>
-                <div class="summary">
-                    <h3>Weekly Overview</h3>
-                    ${Object.entries(categoryTotals).map(([category, hours]) => `
-                        <div class="metric">
-                            <span>${category}</span>
-                            <span>${hours}h (${((hours/totalHours)*100).toFixed(1)}%)</span>
-                        </div>
-                    `).join('')}
-                    <div class="metric" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                        <strong>Total Tracked Time</strong>
-                        <strong>${totalHours}h</strong>
-                    </div>
-                    <div class="metric">
-                        <span>Untracked Time</span>
-                        <span>${168 - totalHours}h</span>
-                    </div>
-                </div>
-                ${generateInsights(data, categoryTotals, totalHours)}
-            `;
-        }
-
-        function generateInsights(data, categoryTotals, totalHours) {
-            const insights = [];
+            // Update progress bar
+            const timeBar = document.getElementById('timeBar');
+            timeBar.innerHTML = '';
             
-            // Investment to distraction ratio
-            const investmentRatio = categoryTotals['Investments'] / categoryTotals['Distractions'];
-            if (investmentRatio > 1) {
-                insights.push(`You're investing ${investmentRatio.toFixed(1)}x more time than spending on distractions - great balance!`);
-            } else if (investmentRatio < 1) {
-                insights.push(`Consider rebalancing your time - currently spending ${(1/investmentRatio).toFixed(1)}x more time on distractions than investments.`);
+            const colors = {
+                investments: '#4CAF50',
+                distractions: '#f44336',
+                sleep: '#2196F3',
+                work: '#FFC107',
+                unaccounted: '#9E9E9E'
+            };
+
+            Object.entries(percentages).forEach(([category, percentage]) => {
+                if (percentage > 0) {
+                    const segment = document.createElement('div');
+                    segment.className = 'progress-segment';
+                    segment.style.width = `${percentage}%`;
+                    segment.style.backgroundColor = colors[category];
+                    segment.textContent = `${category}: ${percentage.toFixed(1)}%`;
+                    timeBar.appendChild(segment);
+                }
+            });
+
+            // Generate insight
+            const ratio = distractions / investments;
+            const insight = document.getElementById('insight');
+            if (distractions > investments) {
+                insight.textContent = `You spend ${ratio.toFixed(1)} times more time on distractions than investments.`;
+            } else if (investments > distractions) {
+                insight.textContent = `You spend ${(1/ratio).toFixed(1)} times more time on investments than distractions.`;
+            } else {
+                insight.textContent = `Your time is equally split between investments and distractions.`;
             }
 
-            // Time utilization
-            const utilisationRate = (totalHours / 168) * 100;
-            insights.push(`Your time utilization rate is ${utilisationRate.toFixed(1)}% of the week.`);
-
-            // Highest time activities
-            const topActivities = [...data].sort((a, b) => b.value - a.value).slice(0, 3);
-            insights.push(`Your top time commitments are: ${topActivities.map(a => `${a.name} (${a.value}h)`).join(', ')}`);
-
-            return `
-                <div class="summary" style="margin-top: 15px;">
-                    <h3>Key Insights</h3>
-                    ${insights.map(insight => `<p style="margin: 10px 0;">${insight}</p>`).join('')}
-                </div>
-            `;
+            // Show results
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('content').style.display = 'none';
         }
-
-        // Update the calculateResults function in your existing code
-        const originalCalculateResults = window.calculateResults;
-        window.calculateResults = function() {
-            originalCalculateResults();
-            createTimeVisualization();
-        };
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (document.getElementById('results').style.display === 'block') {
-                createTimeVisualization();
-            }
-        });
     </script>
 </body>
 </html>
