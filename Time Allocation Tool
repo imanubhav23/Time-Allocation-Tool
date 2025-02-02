@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Allocation Tool</title>
+    <style>
+        :root {
+            --primary-color: #333333;
+            --font-size: 16px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: var(--primary-color);
+            font-size: var(--font-size);
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .landing {
+            text-align: center;
+            padding: 50px 0;
+        }
+
+        .start-btn, .calculate-btn {
+            padding: 15px 30px;
+            font-size: var(--font-size);
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .content, .results {
+            display: none;
+            margin-top: 50px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .column {
+            flex: 1;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .activity-box {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .activity-input {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="number"], input[type="text"] {
+            padding: 5px;
+            font-size: var(--font-size);
+            color: var(--primary-color);
+        }
+
+        .add-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: var(--font-size);
+        }
+
+        label {
+            font-weight: bold;
+            font-size: var(--font-size);
+            color: var(--primary-color);
+        }
+
+        span {
+            font-size: var(--font-size);
+            color: var(--primary-color);
+        }
+
+        .fixed-activities {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            margin: 20px 0;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 30px;
+            display: flex;
+        }
+
+        .progress-segment {
+            height: 100%;
+            display: inline-block;
+            text-align: center;
+            color: white;
+            line-height: 30px;
+            font-size: 14px;
+        }
+
+        .insight {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="landing">
+        <h1>Time Allocation Tool</h1>
+        <button class="start-btn" onclick="startTool()">Start</button>
+    </div>
+
+    <div id="content" class="content">
+        <div class="row">
+            <div class="column">
+                <h2>Investments</h2>
+                <div id="investments-list">
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Friends/Family Time:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Exercise:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Learning:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Personal Development:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Work/Career:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addNewActivity('investments-list')">+ Add Investment</button>
+            </div>
+
+            <div class="column">
+                <h2>Distractions</h2>
+                <div id="distractions-list">
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Social Media:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Streaming Services:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Gaming:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Mindless Browsing:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                    <div class="activity-box">
+                        <div class="activity-input">
+                            <label>Procrastination:</label>
+                            <input type="number" min="0" max="168" value="0">
+                            <span>hours/week</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addNewActivity('distractions-list')">+ Add Distraction</button>
+            </div>
+        </div>
+
+        <div class="fixed-activities">
+            <div class="activity-box">
+                <div class="activity-input">
+                    <label>Sleep:</label>
+                    <input type="number" min="0" max="168" value="56">
+                    <span>hours/week</span>
+                </div>
+            </div>
+            <div class="activity-box">
+                <div class="activity-input">
+                    <label>Work:</label>
+                    <input type="number" min="0" max="168" value="40">
+                    <span>hours/week</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateResults()">Calculate and See Results</button>
+    </div>
+
+    <div id="results" class="results">
+        <h2>Your Time Allocation Results</h2>
+        <div class="progress-bar" id="timeBar"></div>
+        <div class="insight" id="insight"></div>
+    </div>
+
+    <script>
+        function startTool() {
+            document.getElementById('content').style.display = 'block';
+            document.querySelector('.landing').style.display = 'none';
+        }
+
+        function addNewActivity(listId) {
+            const list = document.getElementById(listId);
+            const newBox = document.createElement('div');
+            newBox.className = 'activity-box';
+            
+            const input = document.createElement('div');
+            input.className = 'activity-input';
+            
+            input.innerHTML = `
+                <input type="text" placeholder="Enter activity name" style="font-size: var(--font-size);">
+                <input type="number" min="0" max="168" value="0" style="font-size: var(--font-size);">
+                <span style="font-size: var(--font-size);">hours/week</span>
+            `;
+            
+            newBox.appendChild(input);
+            list.appendChild(newBox);
+        }
+
+        function calculateResults() {
+            // Calculate total hours for each category
+            const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
+                .reduce((sum, input) => sum + Number(input.value), 0);
+            
+            const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
+                .reduce((sum, input) => sum + Number(input.value), 0);
+            
+            const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
+            const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
+            
+            const total = 168; // Total hours in a week
+            const unaccounted = total - (investments + distractions + sleep + work);
+
+            // Calculate percentages
+            const percentages = {
+                investments: (investments / total) * 100,
+                distractions: (distractions / total) * 100,
+                sleep: (sleep / total) * 100,
+                work: (work / total) * 100,
+                unaccounted: (unaccounted / total) * 100
+            };
+
+            // Update progress bar
+            const timeBar = document.getElementById('timeBar');
+            timeBar.innerHTML = '';
+            
+            const colors = {
+                investments: '#4CAF50',
+                distractions: '#f44336',
+                sleep: '#2196F3',
+                work: '#FFC107',
+                unaccounted: '#9E9E9E'
+            };
+
+            Object.entries(percentages).forEach(([category, percentage]) => {
+                if (percentage > 0) {
+                    const segment = document.createElement('div');
+                    segment.className = 'progress-segment';
+                    segment.style.width = `${percentage}%`;
+                    segment.style.backgroundColor = colors[category];
+                    segment.textContent = `${category}: ${percentage.toFixed(1)}%`;
+                    timeBar.appendChild(segment);
+                }
+            });
+
+            // Generate insight
+            const ratio = distractions / investments;
+            const insight = document.getElementById('insight');
+            if (distractions > investments) {
+                insight.textContent = `You spend ${ratio.toFixed(1)} times more time on distractions than investments.`;
+            } else if (investments > distractions) {
+                insight.textContent = `You spend ${(1/ratio).toFixed(1)} times more time on investments than distractions.`;
+            } else {
+                insight.textContent = `Your time is equally split between investments and distractions.`;
+            }
+
+            // Show results
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('content').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
