@@ -261,16 +261,13 @@
 <body>
     <div class="landing">
     <h1>Time Allocation Tool</h1>
-    <div class="info-box">
-        <strong>Important Information:</strong>
-        <p>There are 168 hours in a week (24 hours × 7 days). Please allocate all 168 hours across your activities. The calculator will help you track the total and ensure you've accounted for all hours in your week.</p>
-        <p>Current Total: <span id="totalHoursSpent">0</span>/168 hours</p>
-    </div>
     <button class="start-btn" onclick="startTool()">Start</button>
 </div>
 
     <div id="content" class="content">
-        <div class="row">
+        <div class="info-box" style="margin-top: 20px;">
+    <p>Current Total: <span id="totalHoursSpent">0</span>/168 hours</p>
+</div>        <div class="row">
             <div class="column">
                 <h2>Investments</h2>
                 <div id="investments-list">
@@ -380,6 +377,11 @@
 
     <div id="results" class="results">
         <h2>Your Time Allocation Results</h2>
+         <div class="info-box">
+        <strong>Important Information:</strong>
+        <p>There are 168 hours in a week (24 hours × 7 days). You have successfully allocated all your weekly hours across your activities.</p>
+        <p>Total Hours Allocated: <span>168</span>/168 hours</p>
+    </div>
         <div class="progress-bar" id="timeBar"></div>
         <div class="insight" id="insight"></div>
         <div class="viz-container">
@@ -475,6 +477,11 @@ function addNewActivity(listId) {
 function calculateResults() {
     const total = Number(document.getElementById('totalHoursSpent').textContent);
     if (total !== 168) {
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.style.display = 'block';
+        errorMessage.textContent = total > 168 ? 
+            `You've allocated ${total} hours. Please reduce by ${total - 168} hours to proceed.` :
+            `You've allocated ${total} hours. Please add ${168 - total} more hours to proceed.`;
         return;
     }
 
