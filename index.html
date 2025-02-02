@@ -273,11 +273,11 @@
             const input = document.createElement('div');
             input.className = 'activity-input';
             
-            input.innerHTML = 
+            input.innerHTML = `
                 <input type="text" placeholder="Enter activity name" style="font-size: var(--font-size);">
                 <input type="number" min="0" max="168" value="0" style="font-size: var(--font-size);">
                 <span style="font-size: var(--font-size);">hours/week</span>
-            ;
+            `;
             
             newBox.appendChild(input);
             list.appendChild(newBox);
@@ -322,9 +322,9 @@
                 if (percentage > 0) {
                     const segment = document.createElement('div');
                     segment.className = 'progress-segment';
-                    segment.style.width = ${percentage}%;
+                    segment.style.width = `${percentage}%`;
                     segment.style.backgroundColor = colors[category];
-                    segment.textContent = ${category}: ${percentage.toFixed(1)}%;
+                    segment.textContent = `${category}: ${percentage.toFixed(1)}%`;
                     timeBar.appendChild(segment);
                 }
             });
@@ -333,11 +333,11 @@
             const ratio = distractions / investments;
             const insight = document.getElementById('insight');
             if (distractions > investments) {
-                insight.textContent = You spend ${ratio.toFixed(1)} times more time on distractions than investments.;
+                insight.textContent = `You spend ${ratio.toFixed(1)} times more time on distractions than investments.`;
             } else if (investments > distractions) {
-                insight.textContent = You spend ${(1/ratio).toFixed(1)} times more time on investments than distractions.;
+                insight.textContent = `You spend ${(1/ratio).toFixed(1)} times more time on investments than distractions.`;
             } else {
-                insight.textContent = Your time is equally split between investments and distractions.;
+                insight.textContent = `Your time is equally split between investments and distractions.`;
             }
 
             // Show results
