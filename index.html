@@ -454,90 +454,54 @@
 <div class="insights" id="timeInsights"></div>
     </div>
 
-    <script>
-       function startTool() {
+<script>
+// 1. Start with your existing utility functions
+function startTool() {
     document.getElementById('content').style.display = 'block';
     document.querySelector('.landing').style.display = 'none';
 }
 
 function updateTotal() {
-    const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
-        .reduce((sum, input) => sum + Number(input.value), 0);
-    
-    const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
-        .reduce((sum, input) => sum + Number(input.value), 0);
-    
-    const fixed = Array.from(document.querySelectorAll('.fixed-activities input[type="number"]'))
-        .reduce((sum, input) => sum + Number(input.value), 0);
-
-    const total = investments + distractions + fixed;
-    document.getElementById('totalHoursSpent').textContent = total;
-    
-    const errorMessage = document.getElementById('error-message');
-    const calculateBtn = document.querySelector('.calculate-btn');
-    
-    if (total !== 168) {
-        errorMessage.style.display = 'block';
-        calculateBtn.disabled = true;
-        calculateBtn.style.opacity = '0.5';
-        if (total > 168) {
-            errorMessage.textContent = `You've allocated ${total} hours. Please reduce by ${total - 168} hours to proceed.`;
-        } else {
-            errorMessage.textContent = `You've allocated ${total} hours. Please add ${168 - total} more hours to proceed.`;
-        }
-    } else {
-        errorMessage.style.display = 'none';
-        calculateBtn.disabled = false;
-        calculateBtn.style.opacity = '1';
-    }
+    // ... existing updateTotal code ...
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const allInputs = document.querySelectorAll('input[type="number"]');
-    allInputs.forEach(input => {
-        input.setAttribute('max', '168');
-        input.addEventListener('input', function() {
-            if (this.value > 168) {
-                this.value = 168;
-            }
-            if (this.value < 0) {
-                this.value = 0;
-            }
-            updateTotal();
-        });
-    });
-    updateTotal();
-});
+// 2. Add collectData as a standalone function (moved from inside createTimeVisualization)
+function collectData() {
+    const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
+        .map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other',
+            value: Number(box.querySelector('input[type="number"]').value),
+            category: 'Investments'
+        }))
+        .filter(item => item.value > 0);
 
+    const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
+        .map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other',
+            value: Number(box.querySelector('input[type="number"]').value),
+            category: 'Distractions'
+        }))
+        .filter(item => item.value > 0);
+
+    const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
+        .map(box => ({
+            name: box.querySelector('label').textContent.replace(':', ''),
+            value: Number(box.querySelector('input[type="number"]').value),
+            category: 'Fixed'
+        }))
+        .filter(item => item.value > 0);
+
+    return [...investments, ...distractions, ...fixed];
+}
+
+// 3. Keep your addNewActivity function
 function addNewActivity(listId) {
-    const list = document.getElementById(listId);
-    const newBox = document.createElement('div');
-    newBox.className = 'activity-box';
-    
-    const input = document.createElement('div');
-    input.className = 'activity-input';
-    
-    input.innerHTML = `
-        <input type="text" placeholder="Enter activity name" style="font-size: var(--font-size);">
-        <input type="number" min="0" max="168" value="0" style="font-size: var(--font-size);">
-        <span style="font-size: var(--font-size);">hours/week</span>
-    `;
-    
-    newBox.appendChild(input);
-    list.appendChild(newBox);
-    
-    const numberInput = input.querySelector('input[type="number"]');
-    numberInput.addEventListener('input', function() {
-        if (this.value > 168) {
-            this.value = 168;
-        }
-        if (this.value < 0) {
-            this.value = 0;
-        }
-        updateTotal();
-    });
+    // ... existing addNewActivity code ...
 }
 
+// 4. Update the calculateResults function
 function calculateResults() {
     const total = Number(document.getElementById('totalHoursSpent').textContent);
     if (total !== 168) {
@@ -594,41 +558,15 @@ function calculateResults() {
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
     
+    // Create all visualizations
     createTimeVisualization();
+    const data = collectData();
+    createAreaChart(data);
 }
 
+// 5. Update createTimeVisualization (remove collectData from inside it)
 function createTimeVisualization() {
-    function collectData() {
-        const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label')?.textContent.replace(':', '') || 
-                      box.querySelector('input[type="text"]')?.value || 'Other',
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Investments'
-            }))
-            .filter(item => item.value > 0);
-
-        const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label')?.textContent.replace(':', '') || 
-                      box.querySelector('input[type="text"]')?.value || 'Other',
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Distractions'
-            }))
-            .filter(item => item.value > 0);
-
-        const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label').textContent.replace(':', ''),
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Fixed'
-            }))
-            .filter(item => item.value > 0);
-
-        return [...investments, ...distractions, ...fixed];
-    }
-
-    const data = collectData();
+    const data = collectData();  // Now calls the standalone function
     
     const colors = {
         Investments: '#4CAF50',
@@ -636,218 +574,27 @@ function createTimeVisualization() {
         Fixed: '#2196F3'
     };
 
-    const treemap = document.getElementById('timeTreemap');
-    treemap.innerHTML = `
-        <h2 style="padding: 15px; margin: 0;">Time Distribution</h2>
-        <div class="legend">
-            ${Object.entries(colors).map(([category, color]) => `
-                <div class="legend-item">
-                    <div class="legend-color" style="background: ${color}"></div>
-                    <span>${category}</span>
-                </div>
-            `).join('')}
-        </div>
-        <div style="display: flex; flex-wrap: wrap; padding: 15px;">
-            ${data.map(item => `
-                <div class="time-box" style="background: ${colors[item.category]}; flex: ${item.value};">
-                    <h3>${item.name}</h3>
-                    <p>${item.value}h (${((item.value/168)*100).toFixed(1)}%)</p>
-                    <div class="percentage-bar">
-                        <div class="percentage-fill" 
-                             style="width: ${(item.value/168)*100}%; background: rgba(255,255,255,0.3)">
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-
-    const categoryTotals = data.reduce((acc, item) => {
-        acc[item.category] = (acc[item.category] || 0) + item.value;
-        return acc;
-    }, {});
-
-    const insights = document.getElementById('timeInsights');
-    insights.innerHTML = generateInsights(data, categoryTotals);
+    // ... rest of existing createTimeVisualization code ...
 }
 
-function generateInsights(data, categoryTotals) {
-    const insights = [];
-    
-    const investmentRatio = categoryTotals['Investments'] / categoryTotals['Distractions'];
-    if (investmentRatio > 1) {
-        insights.push(`You're investing ${investmentRatio.toFixed(1)}x more time than spending on distractions - great balance!`);
-    } else if (investmentRatio < 1) {
-        insights.push(`Consider rebalancing your time - currently spending ${(1/investmentRatio).toFixed(1)}x more time on distractions than investments.`);
-    }
-
-    insights.push(`You have successfully allocated all 168 hours of your week.`);
-
-    const topActivities = [...data].sort((a, b) => b.value - a.value).slice(0, 3);
-    insights.push(`Your top time commitments are: ${topActivities.map(a => `${a.name} (${a.value}h)`).join(', ')}`);
-
-    return `
-        <div class="summary">
-            <h3>Weekly Overview</h3>
-            ${Object.entries(categoryTotals).map(([category, hours]) => `
-                <div class="metric">
-                    <span>${category}</span>
-                    <span>${hours}h (${((hours/168)*100).toFixed(1)}%)</span>
-                </div>
-            `).join('')}
-            <div class="metric" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                <strong>Total Time</strong>
-                <strong>168h</strong>
-            </div>
-        </div>
-        <div class="summary" style="margin-top: 15px;">
-            <h3>Key Insights</h3>
-            ${insights.map(insight => `<p style="margin: 10px 0;">${insight}</p>`).join('')}
-        </div>
-    `;
-}
-
-window.addEventListener('resize', () => {
-    if (document.getElementById('results').style.display === 'block') {
-        createTimeVisualization();
-    }
-});
+// 6. Keep your existing createAreaChart function
 function createAreaChart(data) {
-    const container = document.getElementById('timeAreaChart');
-    const width = container.clientWidth - 100; // Adjust for padding
-    const height = container.clientHeight - 60; // Adjust for padding
-    
-    // Group data by category
-    const categories = ['Investments', 'Distractions', 'Fixed'];
-    const categoryColors = {
-        'Investments': '#4CAF50',
-        'Distractions': '#f44336',
-        'Fixed': '#2196F3'
-    };
-    
-    // Create time points (0 to 24 hours)
-    const timePoints = Array.from({length: 25}, (_, i) => i);
-    
-    // Create stacked data
-    const stackedData = timePoints.map(hour => {
-        const point = { hour };
-        let cumulative = 0;
-        
-        categories.forEach(category => {
-            const categoryItems = data.filter(item => item.category === category);
-            const categoryValue = categoryItems.reduce((sum, item) => {
-                // Distribute hours evenly across 24 hours
-                return sum + (item.value / 24);
-            }, 0);
-            
-            point[category + 'Start'] = cumulative;
-            cumulative += categoryValue;
-            point[category + 'End'] = cumulative;
-        });
-        
-        return point;
-    });
-    
-    // Create SVG
-    container.innerHTML = `
-        <svg class="chart-svg" viewBox="0 0 ${width} ${height}">
-            <!-- Y-axis -->
-            ${Array.from({length: 6}, (_, i) => {
-                const y = height - (height * i / 5);
-                const value = (7 * i).toFixed(1);
-                return `
-                    <line class="axis-line" x1="0" y1="${y}" x2="${width}" y2="${y}" />
-                    <text class="axis-label" x="-10" y="${y}" text-anchor="end" dominant-baseline="middle">
-                        ${value}h
-                    </text>
-                `;
-            }).join('')}
-            
-            <!-- X-axis -->
-            ${Array.from({length: 13}, (_, i) => {
-                const x = (width * i / 12);
-                return `
-                    <line class="axis-line" x1="${x}" y1="0" x2="${x}" y2="${height}" />
-                    <text class="axis-label" x="${x}" y="${height + 20}" text-anchor="middle">
-                        ${i * 2}:00
-                    </text>
-                `;
-            }).join('')}
-            
-            <!-- Area paths -->
-            ${categories.map(category => {
-                const points = stackedData.map(point => {
-                    const x = (point.hour / 24) * width;
-                    const yStart = height - (point[category + 'Start'] / 7) * height;
-                    const yEnd = height - (point[category + 'End'] / 7) * height;
-                    return { x, yStart, yEnd };
-                });
-                
-                const pathD = `
-                    M ${points[0].x} ${points[0].yEnd}
-                    ${points.map(p => `L ${p.x} ${p.yEnd}`).join(' ')}
-                    L ${points[points.length-1].x} ${points[points.length-1].yStart}
-                    ${points.reverse().map(p => `L ${p.x} ${p.yStart}`).join(' ')}
-                    Z
-                `;
-                
-                return `
-                    <path class="area-path" d="${pathD}" 
-                          fill="${categoryColors[category]}"
-                          data-category="${category}">
-                        <title>${category}</title>
-                    </path>
-                `;
-            }).join('')}
-        </svg>
-    `;
-    
-    // Create legend
-    const legend = document.getElementById('chartLegend');
-    legend.innerHTML = categories.map(category => `
-        <div class="legend-item" data-category="${category}">
-            <div class="legend-color" style="background: ${categoryColors[category]}"></div>
-            <span>${category}</span>
-        </div>
-    `).join('');
-    
-    // Add legend interactivity
-    legend.querySelectorAll('.legend-item').forEach(item => {
-        item.addEventListener('mouseover', () => {
-            const category = item.dataset.category;
-            container.querySelectorAll('.area-path').forEach(path => {
-                if (path.dataset.category !== category) {
-                    path.style.fillOpacity = '0.2';
-                }
-            });
-        });
-        
-        item.addEventListener('mouseout', () => {
-            container.querySelectorAll('.area-path').forEach(path => {
-                path.style.fillOpacity = '0.6';
-            });
-        });
-    });
+    // ... existing createAreaChart code ...
 }
 
-// Update the window resize handler
+// 7. Update the window resize handler
 window.addEventListener('resize', () => {
     if (document.getElementById('results').style.display === 'block') {
         createTimeVisualization();
-        createAreaChart(collectData());
+        const data = collectData();
+        createAreaChart(data);
     }
 });
 
-// Update calculateResults to include the area chart
-function calculateResults() {
-    // ... existing code ...
-    
-    const data = collectData();
-    createEnhancedVisualizations(data);
-    createAreaChart(data);
-    
-    // ... rest of existing code ...
-}        
-    </script>
+// 8. Keep your existing DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing DOMContentLoaded code ...
+});
+</script>
 </body>
 </html>
