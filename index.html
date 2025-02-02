@@ -138,6 +138,22 @@
             background-color: #f5f5f5;
             border-radius: 5px;
         }
+
+        .snake-diagram {
+            display: none;
+            margin-top: 30px;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .snake-segment {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -257,6 +273,12 @@
         <h2>Your Time Allocation Results</h2>
         <div class="progress-bar" id="timeBar"></div>
         <div class="insight" id="insight"></div>
+        <button class="calculate-btn" onclick="viewInsights()">View Insights</button>
+    </div>
+
+    <div id="snake-diagram" class="snake-diagram">
+        <h3>Snake Diagram of Your Activities</h3>
+        <div id="snake-segments"></div>
     </div>
 
     <script>
@@ -284,7 +306,6 @@
         }
 
         function calculateResults() {
-            // Calculate total hours for each category
             const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
                 .reduce((sum, input) => sum + Number(input.value), 0);
             
@@ -294,10 +315,9 @@
             const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
             const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
             
-            const total = 168; // Total hours in a week
+            const total = 168;
             const unaccounted = total - (investments + distractions + sleep + work);
 
-            // Calculate percentages
             const percentages = {
                 investments: (investments / total) * 100,
                 distractions: (distractions / total) * 100,
@@ -306,7 +326,6 @@
                 unaccounted: (unaccounted / total) * 100
             };
 
-            // Update progress bar
             const timeBar = document.getElementById('timeBar');
             timeBar.innerHTML = '';
             
@@ -329,7 +348,6 @@
                 }
             });
 
-            // Generate insight
             const ratio = distractions / investments;
             const insight = document.getElementById('insight');
             if (distractions > investments) {
@@ -340,9 +358,41 @@
                 insight.textContent = `Your time is equally split between investments and distractions.`;
             }
 
-            // Show results
             document.getElementById('results').style.display = 'block';
             document.getElementById('content').style.display = 'none';
+        }
+
+        function viewInsights() {
+            const snakeDiagram = document.getElementById('snake-diagram');
+            const snakeSegments = document.getElementById('snake-segments');
+            
+            snakeSegments.innerHTML = ''; // Clear previous segments
+
+            // Get the data (from the calculated results)
+            const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
+                .reduce((sum, input) => sum + Number(input.value), 0);
+            const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
+                .reduce((sum, input) => sum + Number(input.value), 0);
+            const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
+            const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
+
+            const activities = [
+                { name: "Investments", hours: investments, color: "#4CAF50" },
+                { name: "Distractions", hours: distractions, color: "#f44336" },
+                { name: "Sleep", hours: sleep, color: "#2196F3" },
+                { name: "Work", hours: work, color: "#FFC107" },
+            ];
+
+            activities.forEach(activity => {
+                const segment = document.createElement('div');
+                segment.className = 'snake-segment';
+                segment.style.backgroundColor = activity.color;
+                segment.style.height = `${activity.hours / 168 * 100}%`;
+                segment.title = `${activity.name}: ${activity.hours} hours/week`;
+                snakeSegments.appendChild(segment);
+            });
+
+            snakeDiagram.style.display = 'block';
         }
     </script>
 </body>
