@@ -5,6 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Allocation Tool</title>
     <style>
+
+/* Add to your existing CSS */
+.visualization-container {
+    padding: 20px;
+    margin: 20px 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-section {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.pie-chart {
+    flex: 1;
+    min-width: 300px;
+    position: relative;
+    height: 300px;
+}
+
+.stats-panel {
+    flex: 1;
+    min-width: 300px;
+    padding: 15px;
+}
+
+.stat-bar {
+    margin: 15px 0;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.progress-container {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.category-card {
+    padding: 15px;
+    background: #f8f8f8;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.category-total {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 10px 0;
+}
+        
 .info-box {
     background-color: #e3f2fd;
     border: 1px solid #2196F3;
@@ -377,6 +452,14 @@
 
     <div id="results" class="results">
         <h2>Your Time Allocation Results</h2>
+        <div class="visualization-container">
+        <h3>Time Distribution Analysis</h3>
+        <div class="chart-section">
+            <div class="pie-chart" id="pieChart"></div>
+            <div class="stats-panel" id="statsPanel"></div>
+        </div>
+        <div class="category-grid" id="categoryGrid"></div>
+    </div>
          <div class="info-box">
         <strong>Important Information:</strong>
         <p>There are 168 hours in a week (24 hours × 7 days). You have successfully allocated all your weekly hours across your activities.</p>
@@ -484,8 +567,11 @@ function calculateResults() {
             `You've allocated ${total} hours. Please add ${168 - total} more hours to proceed.`;
         return;
     }
-
-    const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
+   const data = collectData();
+    
+    // Add this line to create the new visualizations
+    createEnhancedVisualizations(data);
+        const investments = Array.from(document.querySelectorAll('#investments-list input[type="number"]'))
         .reduce((sum, input) => sum + Number(input.value), 0);
     
     const distractions = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
@@ -653,6 +739,108 @@ window.addEventListener('resize', () => {
         createTimeVisualization();
     }
 });
+
+
+        function createEnhancedVisualizations(data) {
+    const colors = {
+        Investments: '#4CAF50',
+        Distractions: '#f44336',
+        Fixed: '#2196F3'
+    };
+
+    // Calculate category totals
+    const categoryTotals = data.reduce((acc, item) => {
+        acc[item.category] = (acc[item.category] || 0) + item.value;
+        return acc;
+    }, {});
+
+    // Create stats panel
+    const statsPanel = document.getElementById('statsPanel');
+    statsPanel.innerHTML = Object.entries(categoryTotals)
+        .map(([category, hours]) => `
+            <div class="stat-bar">
+                <div class="stat-header">
+                    <strong>${category}</strong>
+                    <span>${hours}h (${((hours/168)*100).toFixed(1)}%)</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-fill" 
+                         style="width: ${(hours/168)*100}%; background-color: ${colors[category]}">
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+    // Create pie chart
+    const pieChart = document.getElementById('pieChart');
+    const radius = 100;
+    const centerX = 150;
+    const centerY = 150;
+    
+    let startAngle = 0;
+    let svgContent = `
+        <svg width="300" height="300" viewBox="0 0 300 300">
+            <g transform="translate(${centerX}, ${centerY})">
+    `;
+    
+    Object.entries(categoryTotals).forEach(([category, hours]) => {
+        const percentage = hours / 168;
+        const endAngle = startAngle + (percentage * Math.PI * 2);
+        
+        // Calculate path
+        const x1 = radius * Math.cos(startAngle);
+        const y1 = radius * Math.sin(startAngle);
+        const x2 = radius * Math.cos(endAngle);
+        const y2 = radius * Math.sin(endAngle);
+        
+        const largeArcFlag = percentage > 0.5 ? 1 : 0;
+        
+        const pathData = [
+            `M 0 0`,
+            `L ${x1} ${y1}`,
+            `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+            `Z`
+        ].join(' ');
+        
+        svgContent += `
+            <path d="${pathData}" fill="${colors[category]}" />
+            <text x="${(radius + 20) * Math.cos((startAngle + endAngle) / 2)}"
+                  y="${(radius + 20) * Math.sin((startAngle + endAngle) / 2)}"
+                  text-anchor="middle" fill="#333">
+                ${category}
+                ${((hours/168)*100).toFixed(1)}%
+            </text>
+        `;
+        
+        startAngle = endAngle;
+    });
+    
+    svgContent += `</g></svg>`;
+    pieChart.innerHTML = svgContent;
+
+    // Create category grid
+    const categoryGrid = document.getElementById('categoryGrid');
+    categoryGrid.innerHTML = Object.entries(colors)
+        .map(([category, color]) => {
+            const activities = data.filter(item => item.category === category);
+            return `
+                <div class="category-card">
+                    <h4 style="color: ${color}">${category}</h4>
+                    <div class="category-total">
+                        ${categoryTotals[category]} hours total
+                    </div>
+                    <div>
+                        ${activities.map(activity => `
+                            <div style="margin: 5px 0">
+                                ${activity.name}: ${activity.value}h 
+                                (${((activity.value/168)*100).toFixed(1)}%)
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+}
     </script>
 </body>
 </html>
