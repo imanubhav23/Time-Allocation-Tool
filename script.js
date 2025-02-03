@@ -143,6 +143,7 @@ function calculateResults() {
     document.getElementById('content').style.display = 'none';
     
     createTimeVisualization();
+    createAreaChart();
 }
 
 function createTimeVisualization() {
@@ -362,5 +363,5 @@ function generateInsights(data, categoryTotals) {
 window.addEventListener('resize', () => {
     if (document.getElementById('results').style.display === 'block') {
         createTimeVisualization();
-    }
+        createAreaChart();    }
 });
