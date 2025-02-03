@@ -266,15 +266,14 @@ function createProjectionChart() {
         distractionHours: [distractionHours]
     };
 
-    const investmentTrend = investmentHours > distractionHours ? 50 : -50;
-    const distractionTrend = distractionHours > investmentHours ? 50 : -50;
+    // Calculate accumulated hours
+    const weeksInMonth = 4.33; // average number of weeks in a month
+    const monthlyInvestmentHours = investmentHours * weeksInMonth;
+    const monthlyDistractionHours = distractionHours * weeksInMonth;
 
     for (let i = 1; i < 7; i++) {
-        const lastInvestment = projectedData.investmentHours[i-1];
-        const lastDistraction = projectedData.distractionHours[i-1];
-        
-        projectedData.investmentHours.push(Math.max(0, lastInvestment + (investmentTrend * i)));
-        projectedData.distractionHours.push(Math.max(0, lastDistraction + (distractionTrend * i)));
+        projectedData.investmentHours.push(monthlyInvestmentHours * i);
+        projectedData.distractionHours.push(monthlyDistractionHours * i);
     }
 
     const ctx = document.getElementById('projectionChart').getContext('2d');
@@ -284,20 +283,20 @@ function createProjectionChart() {
             labels: projectedData.labels,
             datasets: [
                 {
-                    label: 'Total Investment Hours',
+                    label: 'Accumulated Investment Hours',
                     data: projectedData.investmentHours,
                     borderColor: '#4CAF50',
                     backgroundColor: 'rgba(76, 175, 80, 0.2)',
                     borderWidth: 2,
-                    borderDash: [5, 5]
+                    fill: true
                 },
                 {
-                    label: 'Total Distraction Hours',
+                    label: 'Accumulated Distraction Hours',
                     data: projectedData.distractionHours,
                     borderColor: '#f44336',
                     backgroundColor: 'rgba(244, 67, 54, 0.2)',
                     borderWidth: 2,
-                    borderDash: [5, 5]
+                    fill: true
                 }
             ]
         },
@@ -306,7 +305,7 @@ function createProjectionChart() {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Total Hours Accumulated Over 6 Months'
+                    text: 'Accumulated Hours Over 6 Months'
                 },
                 tooltip: {
                     callbacks: {
@@ -321,7 +320,8 @@ function createProjectionChart() {
                     title: {
                         display: true,
                         text: 'Total Accumulated Hours'
-                    }
+                    },
+                    beginAtZero: true
                 }
             }
         }
