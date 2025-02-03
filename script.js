@@ -335,22 +335,22 @@ function createHorizontalBarChart() {
         Investments: {
             backgroundColor: 'rgba(76, 175, 80, 0.2)',    // Light green
             borderColor: '#4CAF50',  // Dark green
-            description: 'Growth-oriented activities like learning, personal development, and relationships'
+            description: 'Growth-oriented activities'
         },
         Distractions: {
             backgroundColor: 'rgba(244, 67, 54, 0.2)',    // Light red
             borderColor: '#f44336',  // Dark red
-            description: 'Activities that don\'t contribute to personal growth'
+            description: 'Non-growth activities'
         },
         Work: {
             backgroundColor: 'rgba(255, 193, 7, 0.2)',    // Light yellow
             borderColor: '#FFC107',  // Dark yellow
-            description: 'Productive work-related activities'
+            description: 'Productive work'
         },
         Sleep: {
             backgroundColor: 'rgba(33, 150, 243, 0.2)',    // Light blue
             borderColor: '#2196F3',  // Dark blue
-            description: 'Rest and recovery time'
+            description: 'Rest and recovery'
         }
     };
 
@@ -386,11 +386,27 @@ function createHorizontalBarChart() {
             indexAxis: 'y',
             responsive: true,
             plugins: {
+                title: {
+                    display: true,
+                    text: 'Weekly Time Allocation Breakdown',
+                    font: {
+                        size: 16
+                    }
+                },
+                legend: {
+                    display: false
+                },
                 tooltip: {
+                    displayColors: true,
+                    backgroundColor: 'rgba(255,255,255,0.9)',
+                    titleColor: 'black',
+                    bodyColor: 'black',
+                    borderColor: 'rgba(0,0,0,0.2)',
+                    borderWidth: 1,
                     callbacks: {
                         title: function(context) {
                             const label = context[0].label;
-                            return `${label} (${colorScheme[label].description})`;
+                            return `${label} - ${colorScheme[label].description}`;
                         },
                         label: function(context) {
                             const label = context.label;
@@ -399,14 +415,11 @@ function createHorizontalBarChart() {
                             
                             // Custom tooltip content for Investments and Distractions
                             if (label === 'Investments') {
-                                const detailHTML = investments.map(item => 
-                                    `${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
-                                ).join('\n');
                                 return [
                                     `Total: ${value}h (${percentage}%)`,
                                     '---',
                                     ...investments.map(item => 
-                                        `${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
+                                        `• ${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
                                     )
                                 ];
                             }
@@ -416,7 +429,7 @@ function createHorizontalBarChart() {
                                     `Total: ${value}h (${percentage}%)`,
                                     '---',
                                     ...distractions.map(item => 
-                                        `${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
+                                        `• ${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
                                     )
                                 ];
                             }
@@ -424,9 +437,6 @@ function createHorizontalBarChart() {
                             return `${value}h (${percentage}%)`;
                         }
                     }
-                },
-                legend: {
-                    display: false
                 }
             },
             scales: {
