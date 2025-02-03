@@ -218,6 +218,110 @@ function createTimeVisualization() {
     const insights = document.getElementById('timeInsights');
     insights.innerHTML = generateInsights(data, categoryTotals);
 }
+function createAreaChart() {
+    const chartContainer = document.createElement('div');
+    chartContainer.id = 'areaChartContainer';
+    chartContainer.style.width = '100%';
+    chartContainer.style.height = '400px';
+    chartContainer.style.marginTop = '20px';
+    
+    const canvas = document.createElement('canvas');
+    canvas.id = 'areaChart';
+    chartContainer.appendChild(canvas);
+    
+    document.querySelector('.viz-container').appendChild(chartContainer);
+
+    function collectChartData() {
+        const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
+            .map(box => ({
+                name: box.querySelector('label')?.textContent.replace(':', '') || 
+                      box.querySelector('input[type="text"]')?.value || 'Other',
+                value: Number(box.querySelector('input[type="number"]').value),
+                category: 'Investments'
+            }))
+            .filter(item => item.value > 0);
+
+        const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
+            .map(box => ({
+                name: box.querySelector('label')?.textContent.replace(':', '') || 
+                      box.querySelector('input[type="text"]')?.value || 'Other',
+                value: Number(box.querySelector('input[type="number"]').value),
+                category: 'Distractions'
+            }))
+            .filter(item => item.value > 0);
+
+        const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
+            .map(box => ({
+                name: box.querySelector('label').textContent.replace(':', ''),
+                value: Number(box.querySelector('input[type="number"]').value),
+                category: 'Fixed'
+            }))
+            .filter(item => item.value > 0);
+
+        return [...investments, ...distractions, ...fixed];
+    }
+
+    const data = collectChartData();
+    const categorizedData = data.reduce((acc, item) => {
+        if (!acc[item.category]) {
+            acc[item.category] = [];
+        }
+        acc[item.category].push(item);
+        return acc;
+    }, {});
+
+    const ctx = document.getElementById('areaChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(categorizedData),
+            datasets: Object.entries(categorizedData).map(([category, items], index) => ({
+                label: category,
+                data: items.map(item => item.value),
+                backgroundColor: category === 'Investments' ? '#4CAF50' : 
+                               category === 'Distractions' ? '#f44336' : '#2196F3',
+                borderColor: category === 'Investments' ? '#4CAF50' : 
+                            category === 'Distractions' ? '#f44336' : '#2196F3',
+            }))
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Time Distribution by Category and Activity'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const datasetLabel = context.dataset.label || '';
+                            const dataIndex = context.dataIndex;
+                            const value = context.parsed.y;
+                            const itemName = categorizedData[datasetLabel][datasetLabel === 'Investments' ? dataIndex : dataIndex].name;
+                            return `${itemName}: ${value} hours`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Categories'
+                    }
+                },
+                y: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Hours per Week'
+                    }
+                }
+            }
+        }
+    });
+}
 
 function generateInsights(data, categoryTotals) {
     const insights = [];
