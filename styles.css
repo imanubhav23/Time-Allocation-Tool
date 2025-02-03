@@ -123,16 +123,6 @@ span {
     border-radius: 10px;
 }
 
-.progress-bar {
-    margin: 20px 0;
-    background-color: #f5f5f5;
-    border-radius: 5px;
-    overflow: visible;
-    height: 30px;
-    display: flex;
-    position: relative;
-}
-
 .insight {
     text-align: center;
     font-size: 18px;
@@ -241,53 +231,3 @@ span {
     margin-top: 20px;
 }
 
-.progress-segment {
-    font-size: var(--font-size);
-    font-family: Arial, sans-serif;
-    color: var(--primary-color);
-}
-
-.segment-tooltip {
-    background-color: #24292e;
-    border: none;
-    padding: 4px 8px;
-    font-size: 5px;
-    font-family: Arial, sans-serif;
-    line-height: 1.4;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    color: white;
-    z-index: 1; /* Ensure the tooltip is on top of other elements */
-    position: absolute;
-    pointer-events: none; /* Allow interactions with elements behind the tooltip */
-    display: none; /* Hide the tooltip by default */
-}
-
-.segment-tooltip h4 {
-    color: white;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    font-size: var(--font-size);
-    margin-top: 0;
-    margin-bottom: 4px;
-}
-
-.tooltip-item {
-    color: rgba(255,255,255,0.7);
-    font-size: var(--font-size);
-    margin: 2px 0;
-}
-
-.tooltip-item span:last-child {
-    color: white;
-    font-weight: bold;
-}
-
-.progress-segment:hover .segment-tooltip {
-    display: block;
-    animation: fadeIn 0.2s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translate(-50%, -5px); }
-    to { opacity: 1; transform: translate(-50%, 0); }
-}
