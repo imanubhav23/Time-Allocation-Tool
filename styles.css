@@ -139,8 +139,11 @@ span {
     flex-wrap: wrap;
     gap: 20px;
 }
-
-
+.chart-container {
+    flex: 1;
+    min-width: 400px;
+    height: 400px;
+}
 .time-box {
     position: relative;
     border-radius: 4px;
