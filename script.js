@@ -329,8 +329,9 @@ function createHorizontalBarChart() {
 
     const ctx = document.getElementById('horizontalBarChart').getContext('2d');
     new Chart(ctx, {
-        type: 'horizontalBar',
-        data: {
+        type: 'bar',
+        indexAxis: 'y',
+            data: {
             labels: ['Investments', 'Distractions', 'Work', 'Sleep'],
             datasets: [{
                 data: [
