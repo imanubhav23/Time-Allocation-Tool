@@ -141,7 +141,6 @@ const subcategories = {
     
     createProjectionChart();
     createHorizontalBarChart();
-    createRadarChart();
 }
 
 function createProjectionChart() {
@@ -292,7 +291,6 @@ window.addEventListener('resize', () => {
     if (document.getElementById('results').style.display === 'block') {
         createProjectionChart();
         createHorizontalBarChart();
-        createRadarChart();
     }
 });
 
@@ -390,88 +388,6 @@ function createHorizontalBarChart() {
                     title: {
                         display: true,
                         text: 'Hours per Week'
-                    }
-                }
-            }
-        }
-    });
-}
-
-
-function createRadarChart() {
-    const chartContainer = document.createElement('div');
-    chartContainer.id = 'radarChartContainer';
-    chartContainer.style.width = '100%';
-    chartContainer.style.height = '400px';
-    chartContainer.style.marginTop = '20px';
-    
-    const canvas = document.createElement('canvas');
-    canvas.id = 'radarChart';
-    chartContainer.appendChild(canvas);
-    
-    // Insert the chart container after the horizontal bar chart
-    const vizContainer = document.querySelector('.viz-container');
-    vizContainer.appendChild(chartContainer);
-
-    // Collect data for the chart
-    const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
-        .map(box => ({
-            name: box.querySelector('label')?.textContent.replace(':', '') || 
-                  box.querySelector('input[type="text"]')?.value || 'Other Investment',
-            hours: Number(box.querySelector('input[type="number"]').value)
-        })).filter(item => item.hours > 0);
-
-    const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
-        .map(box => ({
-            name: box.querySelector('label')?.textContent.replace(':', '') || 
-                  box.querySelector('input[type="text"]')?.value || 'Other Distraction',
-            hours: Number(box.querySelector('input[type="number"]').value)
-        })).filter(item => item.hours > 0);
-
-    const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
-    const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
-
-    const ctx = document.getElementById('radarChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: ['Investments', 'Distractions', 'Work', 'Sleep'],
-            datasets: [{
-                label: 'Hours per Week',
-                data: [
-                    investments.reduce((sum, item) => sum + item.hours, 0),
-                    distractions.reduce((sum, item) => sum + item.hours, 0),
-                    work,
-                    sleep
-                ],
-                backgroundColor: 'rgba(76, 175, 80, 0.2)', // Green with transparency
-                borderColor: '#4CAF50',
-                pointBackgroundColor: '#4CAF50'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Time Allocation Radar Chart'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const value = context.parsed.r;
-                            const percentage = ((value / 168) * 100).toFixed(1);
-                            return `${value}h (${percentage}%)`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                r: {
-                    beginAtZero: true,
-                    max: 168, // Total hours in a week
-                    ticks: {
-                        stepSize: 24 // Adjust as needed
                     }
                 }
             }
