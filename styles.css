@@ -144,6 +144,7 @@ span {
     flex: 1;
     min-width: 0;
     height: 400px;
+    width: 50%; /* Set each chart to take up 50% of the container */
 }
 .time-box {
     position: relative;
