@@ -108,59 +108,59 @@ function calculateResults() {
         work: (work / 168) * 100
     };
 
-    const timeBar = document.getElementById('timeBar');
-    timeBar.innerHTML = '';
+ // Collect subcategory details
+const subcategories = {
+    investments: Array.from(document.querySelectorAll('#investments-list .activity-box')).map(box => ({
+        name: box.querySelector('label')?.textContent.replace(':', '') || 
+              box.querySelector('input[type="text"]')?.value || 'Other',
+        hours: Number(box.querySelector('input[type="number"]').value)
+    })).filter(item => item.hours > 0),
     
-    const colors = {
-        investments: '#4CAF50',
-        distractions: '#f44336',
-        sleep: '#2196F3',
-        work: '#FFC107'
-    };
+    distractions: Array.from(document.querySelectorAll('#distractions-list .activity-box')).map(box => ({
+        name: box.querySelector('label')?.textContent.replace(':', '') || 
+              box.querySelector('input[type="text"]')?.value || 'Other',
+        hours: Number(box.querySelector('input[type="number"]').value)
+    })).filter(item => item.hours > 0),
+    
+    sleep: [{name: 'Sleep', hours: Number(document.querySelector('.fixed-activities input[value="56"]').value)}],
+    work: [{name: 'Work', hours: Number(document.querySelector('.fixed-activities input[value="40"]').value)}]
+};
 
-    // Collect subcategory details
-    const subcategories = {
-        investments: Array.from(document.querySelectorAll('#investments-list .activity-box')).map(box => ({
-            name: box.querySelector('label')?.textContent.replace(':', '') || 
-                  box.querySelector('input[type="text"]')?.value || 'Other',
-            hours: Number(box.querySelector('input[type="number"]').value)
-        })).filter(item => item.hours > 0),
-        
-        distractions: Array.from(document.querySelectorAll('#distractions-list .activity-box')).map(box => ({
-            name: box.querySelector('label')?.textContent.replace(':', '') || 
-                  box.querySelector('input[type="text"]')?.value || 'Other',
-            hours: Number(box.querySelector('input[type="number"]').value)
-        })).filter(item => item.hours > 0),
-        
-        sleep: [{name: 'Sleep', hours: Number(document.querySelector('.fixed-activities input[value="56"]').value)}],
-        work: [{name: 'Work', hours: Number(document.querySelector('.fixed-activities input[value="40"]').value)}]
-    };
+const timeBar = document.getElementById('timeBar');
+timeBar.innerHTML = '';
 
-    Object.entries(percentages).forEach(([category, percentage]) => {
-        if (percentage > 0) {
-            const segment = document.createElement('div');
-            segment.className = 'progress-segment';
-            segment.style.width = `${percentage}%`;
-            segment.style.backgroundColor = colors[category];
-            segment.textContent = `${category}: ${percentage.toFixed(0)}%`;
-            
-            // Create tooltip for subcategories
-            const tooltip = document.createElement('div');
-            tooltip.className = 'segment-tooltip';
-            tooltip.innerHTML = `
-                <h4>${category}</h4>
-                ${subcategories[category].map(sub => `
-                    <div class="tooltip-item">
-                        <span>${sub.name}</span>
-                        <span>${sub.hours.toFixed(0)}h (${((sub.hours/168)*100).toFixed(0)}%)</span>
-                    </div>
-                `).join('')}
-            `;
-            
-            segment.appendChild(tooltip);
-            timeBar.appendChild(segment);
-        }
-    });
+const colors = {
+    investments: '#4CAF50',
+    distractions: '#f44336',
+    sleep: '#2196F3',
+    work: '#FFC107'
+};
+
+Object.entries(percentages).forEach(([category, percentage]) => {
+    if (percentage > 0) {
+        const segment = document.createElement('div');
+        segment.className = 'progress-segment';
+        segment.style.width = `${percentage}%`;
+        segment.style.backgroundColor = colors[category];
+        segment.textContent = `${category}: ${percentage.toFixed(0)}%`;
+        
+        // Create tooltip for subcategories
+        const tooltip = document.createElement('div');
+        tooltip.className = 'segment-tooltip';
+        tooltip.innerHTML = `
+            <h4>${category}</h4>
+            ${subcategories[category].map(sub => `
+                <div class="tooltip-item">
+                    <span>${sub.name}</span>
+                    <span>${sub.hours.toFixed(0)}h (${((sub.hours/168)*100).toFixed(0)}%)</span>
+                </div>
+            `).join('')}
+        `;
+        
+        segment.appendChild(tooltip);
+        timeBar.appendChild(segment);
+    }
+});
     const ratio = distractions / investments;
     const insight = document.getElementById('insight');
     if (distractions > investments) {
