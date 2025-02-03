@@ -134,18 +134,16 @@ span {
 
 .viz-container {
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping if too many charts */
     justify-content: space-between;
     align-items: center;
-    gap: 10px; /* Space between charts */
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .chart-container {
-    flex: 1; /* Distribute space equally */
-    min-width: 300px; /* Minimum width for each chart */
-    max-width: 48%; /* Prevent charts from becoming too wide */
+    flex: 1;
+    min-width: 400px;
     height: 400px;
-    margin-bottom: 20px; /* Space between rows if wrapping occurs */
 }
 
 .time-box {
