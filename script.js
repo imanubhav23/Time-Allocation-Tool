@@ -256,14 +256,13 @@ function createProjectionChart() {
 
     const { investments, distractions } = collectProjectionData();
 
-    // Simple linear projection
+    // Projection calculation (total hours over 6 months)
     const projectedData = {
         labels: ['Current', 'Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
         investments: [investments],
         distractions: [distractions]
     };
 
-    // Projection calculation (simplified linear trend)
     const investmentTrend = investments > distractions ? -2 : 0;
     const distractionTrend = distractions > investments ? 2 : 0;
 
@@ -271,8 +270,8 @@ function createProjectionChart() {
         const lastInvestment = projectedData.investments[i-1];
         const lastDistraction = projectedData.distractions[i-1];
         
-        projectedData.investments.push(Math.max(0, lastInvestment + investmentTrend));
-        projectedData.distractions.push(Math.max(0, lastDistraction + distractionTrend));
+        projectedData.investments.push(Math.max(0, lastInvestment + (investmentTrend * i)));
+        projectedData.distractions.push(Math.max(0, lastDistraction + (distractionTrend * i)));
     }
 
     const ctx = document.getElementById('projectionChart').getContext('2d');
@@ -282,16 +281,16 @@ function createProjectionChart() {
             labels: projectedData.labels,
             datasets: [
                 {
-                    label: 'Investments',
-                    data: projectedData.investments,
+                    label: 'Total Investment Hours',
+                    data: projectedData.investments.map((val, index) => val * index),
                     borderColor: '#4CAF50',
                     backgroundColor: 'rgba(76, 175, 80, 0.2)',
                     borderWidth: 2,
                     borderDash: [5, 5]
                 },
                 {
-                    label: 'Distractions',
-                    data: projectedData.distractions,
+                    label: 'Total Distraction Hours',
+                    data: projectedData.distractions.map((val, index) => val * index),
                     borderColor: '#f44336',
                     backgroundColor: 'rgba(244, 67, 54, 0.2)',
                     borderWidth: 2,
@@ -304,7 +303,7 @@ function createProjectionChart() {
             plugins: {
                 title: {
                     display: true,
-                    text: '6-Month Time Allocation Projection'
+                    text: 'Total Hours Accumulated Over 6 Months'
                 },
                 tooltip: {
                     callbacks: {
@@ -318,7 +317,7 @@ function createProjectionChart() {
                 y: {
                     title: {
                         display: true,
-                        text: 'Hours per Week'
+                        text: 'Total Accumulated Hours'
                     }
                 }
             }
