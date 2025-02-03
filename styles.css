@@ -250,3 +250,11 @@ span {
     margin: 5px 0;
     font-size: 14px;
 }
+
+.areaChartContainer {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 15px;
+    margin-top: 20px;
+}
