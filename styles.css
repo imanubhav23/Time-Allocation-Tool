@@ -140,12 +140,18 @@ span {
     width: 100%;
 }
 
-.viz-container > canvas {
+.viz-container > div {
     flex: 1;
     min-width: 0;
     height: 400px;
-    width: 50%; /* Set each chart to take up 50% of the container */
+    width: 50%;
 }
+
+.viz-container > div > canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 .time-box {
     position: relative;
     border-radius: 4px;
