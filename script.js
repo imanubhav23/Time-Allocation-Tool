@@ -313,7 +313,6 @@ function createHorizontalBarChart() {
     
     // Insert the chart container before the projection chart
         const vizContainer = document.querySelector('.viz-container');
-    vizContainer.innerHTML = '';
     vizContainer.appendChild(chartContainer);
 
     // Collect data for the chart
