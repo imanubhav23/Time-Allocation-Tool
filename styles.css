@@ -146,12 +146,6 @@ span {
     height: 400px;
     width: 50%;
 }
-
-.viz-container > div > canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
 .time-box {
     position: relative;
     border-radius: 4px;
