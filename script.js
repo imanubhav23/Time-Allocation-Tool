@@ -139,7 +139,8 @@ const subcategories = {
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
     
-    createProjectionChart();;
+    createProjectionChart();
+    createHorizontalBarChart();
 }
 
 function createProjectionChart() {
@@ -288,5 +289,107 @@ function generateInsights(data, categoryTotals) {
 
 window.addEventListener('resize', () => {
     if (document.getElementById('results').style.display === 'block') {
-        createProjectionChart();    }
+        createProjectionChart();
+        createHorizontalBarChart();
+    }
 });
+
+function createHorizontalBarChart() {
+    const chartContainer = document.createElement('div');
+    chartContainer.id = 'horizontalBarChartContainer';
+    chartContainer.style.width = '100%';
+    chartContainer.style.height = '300px';
+    chartContainer.style.marginTop = '20px';
+    
+    const canvas = document.createElement('canvas');
+    canvas.id = 'horizontalBarChart';
+    chartContainer.appendChild(canvas);
+    
+    // Insert the chart container before the projection chart
+    const vizContainer = document.querySelector('.viz-container');
+    vizContainer.insertBefore(chartContainer, vizContainer.firstChild);
+
+    // Collect data for the chart
+    const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
+        .map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other Investment',
+            hours: Number(box.querySelector('input[type="number"]').value)
+        })).filter(item => item.hours > 0);
+
+    const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
+        .map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other Distraction',
+            hours: Number(box.querySelector('input[type="number"]').value)
+        })).filter(item => item.hours > 0);
+
+    const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
+    const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
+
+    const ctx = document.getElementById('horizontalBarChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'horizontalBar',
+        data: {
+            labels: ['Investments', 'Distractions', 'Work', 'Sleep'],
+            datasets: [{
+                data: [
+                    investments.reduce((sum, item) => sum + item.hours, 0),
+                    distractions.reduce((sum, item) => sum + item.hours, 0),
+                    work,
+                    sleep
+                ],
+                backgroundColor: [
+                    '#4CAF50',  // Green for Investments
+                    '#f44336',  // Red for Distractions
+                    '#FFC107',  // Yellow for Work
+                    '#2196F3'   // Blue for Sleep
+                ]
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label;
+                            const value = context.parsed.x;
+                            const percentage = ((value / 168) * 100).toFixed(1);
+                            
+                            // Custom tooltip content
+                            if (label === 'Investments') {
+                                const detailHTML = investments.map(item => 
+                                    `${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
+                                ).join('<br>');
+                                return `${value}h (${percentage}%)<br>${detailHTML}`;
+                            }
+                            
+                            if (label === 'Distractions') {
+                                const detailHTML = distractions.map(item => 
+                                    `${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
+                                ).join('<br>');
+                                return `${value}h (${percentage}%)<br>${detailHTML}`;
+                            }
+                            
+                            return `${value}h (${percentage}%)`;
+                        }
+                    }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    max: 168,
+                    title: {
+                        display: true,
+                        text: 'Hours per Week'
+                    }
+                }
+            }
+        }
+    });
+}
