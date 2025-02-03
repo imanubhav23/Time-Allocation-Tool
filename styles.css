@@ -241,29 +241,24 @@ span {
 }
 
 .progress-segment {
-    height: 100%;
-    display: inline-block;
-    text-align: center;
-    color: white;
-    line-height: 30px;
-    font-size: 14px;
     position: relative;
     cursor: pointer;
 }
 
 .segment-tooltip {
-    position: absolute;
-    top: 100%;
+    position: fixed; /* Changed from absolute to fixed */
+    top: auto; /* Reset top */
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    z-index: 100;
+    z-index: 9999; /* Increased z-index significantly */
     padding: 12px;
     min-width: 200px;
     display: none;
     font-size: 14px;
+    pointer-events: none; /* Prevents tooltip from interfering with other interactions */
 }
 
 .segment-tooltip h4 {
