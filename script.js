@@ -118,23 +118,55 @@ function calculateResults() {
         work: '#FFC107'
     };
 
+    // Collect subcategory details
+    const subcategories = {
+        investments: Array.from(document.querySelectorAll('#investments-list .activity-box')).map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other',
+            hours: Number(box.querySelector('input[type="number"]').value)
+        })).filter(item => item.hours > 0),
+        
+        distractions: Array.from(document.querySelectorAll('#distractions-list .activity-box')).map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other',
+            hours: Number(box.querySelector('input[type="number"]').value)
+        })).filter(item => item.hours > 0),
+        
+        sleep: [{name: 'Sleep', hours: Number(document.querySelector('.fixed-activities input[value="56"]').value)}],
+        work: [{name: 'Work', hours: Number(document.querySelector('.fixed-activities input[value="40"]').value)}]
+    };
+
     Object.entries(percentages).forEach(([category, percentage]) => {
         if (percentage > 0) {
             const segment = document.createElement('div');
             segment.className = 'progress-segment';
             segment.style.width = `${percentage}%`;
             segment.style.backgroundColor = colors[category];
-            segment.textContent = `${category}: ${percentage.toFixed(1)}%`;
+            segment.textContent = `${category}: ${percentage.toFixed(0)}%`;
+            
+            // Create tooltip for subcategories
+            const tooltip = document.createElement('div');
+            tooltip.className = 'segment-tooltip';
+            tooltip.innerHTML = `
+                <h4>${category}</h4>
+                ${subcategories[category].map(sub => `
+                    <div class="tooltip-item">
+                        <span>${sub.name}</span>
+                        <span>${sub.hours.toFixed(0)}h (${((sub.hours/168)*100).toFixed(0)}%)</span>
+                    </div>
+                `).join('')}
+            `;
+            
+            segment.appendChild(tooltip);
             timeBar.appendChild(segment);
         }
     });
-
     const ratio = distractions / investments;
     const insight = document.getElementById('insight');
     if (distractions > investments) {
-        insight.textContent = `You spend ${ratio.toFixed(1)} times more time on distractions than investments.`;
+        insight.textContent = `You spend ${ratio.toFixed(0)} times more time on distractions than investments.`;
     } else if (investments > distractions) {
-        insight.textContent = `You spend ${(1/ratio).toFixed(1)} times more time on investments than distractions.`;
+        insight.textContent = `You spend ${(1/ratio).toFixed(0)} times more time on investments than distractions.`;
     } else {
         insight.textContent = `Your time is equally split between investments and distractions.`;
     }
@@ -142,83 +174,9 @@ function calculateResults() {
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
     
-    createTimeVisualization();
     createProjectionChart();;
 }
 
-function createTimeVisualization() {
-    function collectData() {
-        const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label')?.textContent.replace(':', '') || 
-                      box.querySelector('input[type="text"]')?.value || 'Other',
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Investments'
-            }))
-            .filter(item => item.value > 0);
-
-        const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label')?.textContent.replace(':', '') || 
-                      box.querySelector('input[type="text"]')?.value || 'Other',
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Distractions'
-            }))
-            .filter(item => item.value > 0);
-
-        const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label').textContent.replace(':', ''),
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Fixed'
-            }))
-            .filter(item => item.value > 0);
-
-        return [...investments, ...distractions, ...fixed];
-    }
-
-    const data = collectData();
-    
-    const colors = {
-        Investments: '#4CAF50',
-        Distractions: '#f44336',
-        Fixed: '#2196F3'
-    };
-
-    const treemap = document.getElementById('timeTreemap');
-    treemap.innerHTML = `
-        <h2 style="padding: 15px; margin: 0;">Time Distribution</h2>
-        <div class="legend">
-            ${Object.entries(colors).map(([category, color]) => `
-                <div class="legend-item">
-                    <div class="legend-color" style="background: ${color}"></div>
-                    <span>${category}</span>
-                </div>
-            `).join('')}
-        </div>
-        <div style="display: flex; flex-wrap: wrap; padding: 15px;">
-            ${data.map(item => `
-                <div class="time-box" style="background: ${colors[item.category]}; flex: ${item.value};">
-                    <h3>${item.name}</h3>
-                    <p>${item.value}h (${((item.value/168)*100).toFixed(1)}%)</p>
-                    <div class="percentage-bar">
-                        <div class="percentage-fill" 
-                             style="width: ${(item.value/168)*100}%; background: rgba(255,255,255,0.3)">
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-
-    const categoryTotals = data.reduce((acc, item) => {
-        acc[item.category] = (acc[item.category] || 0) + item.value;
-        return acc;
-    }, {});
-
-    const insights = document.getElementById('timeInsights');
-    insights.innerHTML = generateInsights(data, categoryTotals);
-}
 function createProjectionChart() {
     const chartContainer = document.createElement('div');
     chartContainer.id = 'projectionChartContainer';
@@ -310,7 +268,7 @@ function createProjectionChart() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `${context.dataset.label}: ${context.parsed.y.toFixed(1)} hours`;
+                            return `${context.dataset.label}: ${context.parsed.y.toFixed(0)} hours`;
                         }
                     }
                 }
@@ -332,9 +290,9 @@ function generateInsights(data, categoryTotals) {
     
     const investmentRatio = categoryTotals['Investments'] / categoryTotals['Distractions'];
     if (investmentRatio > 1) {
-        insights.push(`You're investing ${investmentRatio.toFixed(1)}x more time than spending on distractions - great balance!`);
+        insights.push(`You're investing ${investmentRatio.toFixed(0)}x more time than spending on distractions - great balance!`);
     } else if (investmentRatio < 1) {
-        insights.push(`Consider rebalancing your time - currently spending ${(1/investmentRatio).toFixed(1)}x more time on distractions than investments.`);
+        insights.push(`Consider rebalancing your time - currently spending ${(1/investmentRatio).toFixed(0)}x more time on distractions than investments.`);
     }
 
     insights.push(`You have successfully allocated all 168 hours of your week.`);
@@ -348,7 +306,7 @@ function generateInsights(data, categoryTotals) {
             ${Object.entries(categoryTotals).map(([category, hours]) => `
                 <div class="metric">
                     <span>${category}</span>
-                    <span>${hours}h (${((hours/168)*100).toFixed(1)}%)</span>
+                    <span>${hours}h (${((hours/168)*100).toFixed(0)}%)</span>
                 </div>
             `).join('')}
             <div class="metric" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
@@ -365,6 +323,5 @@ function generateInsights(data, categoryTotals) {
 
 window.addEventListener('resize', () => {
     if (document.getElementById('results').style.display === 'block') {
-        createTimeVisualization();
         createProjectionChart();    }
 });
