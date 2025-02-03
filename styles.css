@@ -131,12 +131,12 @@ span {
     width: 100%;
 }
 
-.viz-container > div {
+/* .viz-container > div {
     flex: 1;
     min-width: 0;
     height: 400px;
     width: 50%;
-}
+} */
 
 .insight {
     text-align: center;
