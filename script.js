@@ -186,7 +186,8 @@ segment.addEventListener('mouseleave', () => {
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
     
-    createProjectionChart();;
+    createProjectionChart();
+    createTimeAllocationChart();
 }
 
 function createProjectionChart() {
@@ -333,7 +334,75 @@ function generateInsights(data, categoryTotals) {
     `;
 }
 
+function createTimeAllocationChart() {
+  // Collect the data for the chart
+  const investments = /* Your existing code to collect investments data */;
+  const distractions = /* Your existing code to collect distractions data */;
+  const sleep = /* Your existing code to collect sleep data */;
+  const work = /* Your existing code to collect work data */;
+
+  const data = [
+    ...investments,
+    ...distractions,
+    ...sleep,
+    ...work
+  ];
+
+  // Create the chart
+  const ctx = document.getElementById('timeAllocationChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(item => item.name),
+      datasets: [{
+        label: 'Time Allocation',
+        data: data.map(item => item.value),
+        backgroundColor: [
+          '#4CAF50', // Investments
+          '#f44336', // Distractions
+          '#2196F3', // Sleep
+          '#FFC107'  // Work
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Time Allocation'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const item = data[context.dataIndex];
+              return `${item.name}: ${item.value} hours`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Category'
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Hours'
+          },
+          beginAtZero: true,
+          max: 168
+        }
+      }
+    }
+  });
+}
+
 window.addEventListener('resize', () => {
     if (document.getElementById('results').style.display === 'block') {
-        createProjectionChart();    }
+        createProjectionChart();
+        createTimeAllocationChart();    }
 });
