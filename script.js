@@ -143,7 +143,7 @@ function calculateResults() {
     document.getElementById('content').style.display = 'none';
     
     createTimeVisualization();
-    createAreaChart();
+    createProjectionChart();;
 }
 
 function createTimeVisualization() {
@@ -219,101 +219,103 @@ function createTimeVisualization() {
     const insights = document.getElementById('timeInsights');
     insights.innerHTML = generateInsights(data, categoryTotals);
 }
-function createAreaChart() {
+function createProjectionChart() {
     const chartContainer = document.createElement('div');
-    chartContainer.id = 'areaChartContainer';
+    chartContainer.id = 'projectionChartContainer';
     chartContainer.style.width = '100%';
     chartContainer.style.height = '400px';
     chartContainer.style.marginTop = '20px';
     
     const canvas = document.createElement('canvas');
-    canvas.id = 'areaChart';
+    canvas.id = 'projectionChart';
     chartContainer.appendChild(canvas);
     
     document.querySelector('.viz-container').appendChild(chartContainer);
 
-    function collectChartData() {
+    function collectProjectionData() {
         const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
+            .filter(box => box.querySelector('label')?.textContent !== 'Work:')
             .map(box => ({
                 name: box.querySelector('label')?.textContent.replace(':', '') || 
-                      box.querySelector('input[type="text"]')?.value || 'Other',
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Investments'
-            }))
-            .filter(item => item.value > 0);
+                      box.querySelector('input[type="text"]')?.value || 'Other Investment',
+                value: Number(box.querySelector('input[type="number"]').value)
+            }));
 
         const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
             .map(box => ({
                 name: box.querySelector('label')?.textContent.replace(':', '') || 
-                      box.querySelector('input[type="text"]')?.value || 'Other',
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Distractions'
-            }))
-            .filter(item => item.value > 0);
+                      box.querySelector('input[type="text"]')?.value || 'Other Distraction',
+                value: Number(box.querySelector('input[type="number"]').value)
+            }));
 
-        const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label').textContent.replace(':', ''),
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Fixed'
-            }))
-            .filter(item => item.value > 0);
-
-        return [...investments, ...distractions, ...fixed];
+        return { 
+            investments: investments.reduce((sum, item) => sum + item.value, 0),
+            distractions: distractions.reduce((sum, item) => sum + item.value, 0)
+        };
     }
 
-    const data = collectChartData();
-    const categorizedData = data.reduce((acc, item) => {
-        if (!acc[item.category]) {
-            acc[item.category] = [];
-        }
-        acc[item.category].push(item);
-        return acc;
-    }, {});
+    const { investments, distractions } = collectProjectionData();
 
-    const ctx = document.getElementById('areaChart').getContext('2d');
+    // Simple linear projection
+    const projectedData = {
+        labels: ['Current', 'Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
+        investments: [investments],
+        distractions: [distractions]
+    };
+
+    // Projection calculation (simplified linear trend)
+    const investmentTrend = investments > distractions ? -2 : 0;
+    const distractionTrend = distractions > investments ? 2 : 0;
+
+    for (let i = 1; i < 7; i++) {
+        const lastInvestment = projectedData.investments[i-1];
+        const lastDistraction = projectedData.distractions[i-1];
+        
+        projectedData.investments.push(Math.max(0, lastInvestment + investmentTrend));
+        projectedData.distractions.push(Math.max(0, lastDistraction + distractionTrend));
+    }
+
+    const ctx = document.getElementById('projectionChart').getContext('2d');
     new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
-            labels: Object.keys(categorizedData),
-            datasets: Object.entries(categorizedData).map(([category, items], index) => ({
-                label: category,
-                data: items.map(item => item.value),
-                backgroundColor: category === 'Investments' ? '#4CAF50' : 
-                               category === 'Distractions' ? '#f44336' : '#2196F3',
-                borderColor: category === 'Investments' ? '#4CAF50' : 
-                            category === 'Distractions' ? '#f44336' : '#2196F3',
-            }))
+            labels: projectedData.labels,
+            datasets: [
+                {
+                    label: 'Investments',
+                    data: projectedData.investments,
+                    borderColor: '#4CAF50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                    borderWidth: 2,
+                    borderDash: [5, 5]
+                },
+                {
+                    label: 'Distractions',
+                    data: projectedData.distractions,
+                    borderColor: '#f44336',
+                    backgroundColor: 'rgba(244, 67, 54, 0.2)',
+                    borderWidth: 2,
+                    borderDash: [5, 5]
+                }
+            ]
         },
         options: {
             responsive: true,
             plugins: {
                 title: {
                     display: true,
-                    text: 'Time Distribution by Category and Activity'
+                    text: '6-Month Time Allocation Projection'
                 },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            const datasetLabel = context.dataset.label || '';
-                            const dataIndex = context.dataIndex;
-                            const value = context.parsed.y;
-                            const itemName = categorizedData[datasetLabel][datasetLabel === 'Investments' ? dataIndex : dataIndex].name;
-                            return `${itemName}: ${value} hours`;
+                            return `${context.dataset.label}: ${context.parsed.y.toFixed(1)} hours`;
                         }
                     }
                 }
             },
             scales: {
-                x: {
-                    stacked: true,
-                    title: {
-                        display: true,
-                        text: 'Categories'
-                    }
-                },
                 y: {
-                    stacked: true,
                     title: {
                         display: true,
                         text: 'Hours per Week'
@@ -323,7 +325,6 @@ function createAreaChart() {
         }
     });
 }
-
 function generateInsights(data, categoryTotals) {
     const insights = [];
     
@@ -363,5 +364,5 @@ function generateInsights(data, categoryTotals) {
 window.addEventListener('resize', () => {
     if (document.getElementById('results').style.display === 'block') {
         createTimeVisualization();
-        createAreaChart();    }
+        createProjectionChart();    }
 });
