@@ -108,6 +108,7 @@ function calculateResults() {
         work: (work / 168) * 100
     };
 
+ // Collect subcategory details
 const subcategories = {
     investments: Array.from(document.querySelectorAll('#investments-list .activity-box')).map(box => ({
         name: box.querySelector('label')?.textContent.replace(':', '') || 
@@ -134,17 +135,6 @@ const colors = {
     sleep: '#2196F3',
     work: '#FFC107'
 };
-    const tooltip = document.createElement('div');
-tooltip.className = 'segment-tooltip';
-tooltip.innerHTML = `
-    <h4>${category}</h4>
-    ${subcategories[category].map(sub => `
-        <div class="tooltip-item">
-            <span>${sub.name}</span>
-            <span>${sub.hours.toFixed(0)}h (${((sub.hours/168)*100).toFixed(0)}%)</span>
-        </div>
-    `).join('')}
-`;
 
 Object.entries(percentages).forEach(([category, percentage]) => {
     if (percentage > 0) {
