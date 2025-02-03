@@ -147,7 +147,7 @@ function createProjectionChart() {
     const chartContainer = document.createElement('div');
     chartContainer.id = 'projectionChartContainer';
     // chartContainer.style.width = '50%';
-    // chartContainer.style.height = '400px';
+    chartContainer.style.height = '400px';
     // chartContainer.style.display = 'inline-block';
     // chartContainer.style.verticalAlign = 'top';
     
@@ -302,7 +302,7 @@ function createHorizontalBarChart() {
     const chartContainer = document.createElement('div');
     chartContainer.id = 'horizontalBarChartContainer';
     // chartContainer.style.width = '50%';
-    // chartContainer.style.height = '400px';
+    chartContainer.style.height = '400px';
     // chartContainer.style.display = 'inline-block';
     // chartContainer.style.verticalAlign = 'top';
     
