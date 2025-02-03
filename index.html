@@ -137,8 +137,14 @@
             <p>Total Hours Allocated: <span>168</span>/168 hours</p>
         </div>
         <div class="insight" id="insight"></div>
-        <div class="viz-container"></div>
-
+      <div class="viz-container" style="display: flex; justify-content: space-between; align-items: center;">
+  <div class="chart-container" style="width: 48%; height: 400px;">
+    <canvas id="horizontalBarChart"></canvas>
+  </div>
+  <div class="chart-container" style="width: 48%; height: 400px;">
+    <canvas id="projectionChart"></canvas>
+  </div>
+</div>
         <div class="insights" id="timeInsights"></div>
     </div>
 
