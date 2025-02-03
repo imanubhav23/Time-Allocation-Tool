@@ -242,60 +242,42 @@ span {
 }
 
 .progress-segment {
-    height: 100%;
     position: relative;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 500;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    white-space: nowrap;
 }
 
 .segment-tooltip {
     position: absolute;
-    bottom: calc(100% + 10px);
-    left: 0;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    z-index: 9999;
-    padding: 12px;
-    min-width: 200px;
-    display: none;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.segment-tooltip {
+    background: #24292e;
+    border: none;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .segment-tooltip:after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 20px;
-    width: 10px;
-    height: 10px;
-    background: white;
-    transform: rotate(45deg);
-    box-shadow: 2px 2px 2px rgba(0,0,0,0.1);
+    display: none;
 }
 
 .segment-tooltip h4 {
-    margin: 0 0 8px 0;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #eee;
-    text-transform: capitalize;
+    color: white;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .tooltip-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    color: #666;
+    color: rgba(255,255,255,0.7);
 }
 
 .tooltip-item span:last-child {
-    font-weight: 500;
-    color: #333;
+    color: white;
 }
 
 .progress-segment:hover .segment-tooltip {
