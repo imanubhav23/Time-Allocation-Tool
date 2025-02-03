@@ -248,28 +248,38 @@ span {
 }
 
 .segment-tooltip {
-    background: #24292e;
+    background-color: #24292e;
     border: none;
     padding: 8px 12px;
-    font-size: 12px;
+    font-size: var(--font-size);
+    font-family: Arial, sans-serif;
     line-height: 1.4;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    color: white;
+    z-index: 1; /* Ensure the tooltip is on top of other elements */
+    position: absolute;
+    pointer-events: none; /* Allow interactions with elements behind the tooltip */
+    display: none; /* Hide the tooltip by default */
 }
 
 .segment-tooltip h4 {
     color: white;
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    font-size: 12px;
+    font-size: var(--font-size);
+    margin-top: 0;
+    margin-bottom: 4px;
 }
 
 .tooltip-item {
     color: rgba(255,255,255,0.7);
-    font-size: 12px;
+    font-size: var(--font-size);
+    margin: 2px 0;
 }
 
 .tooltip-item span:last-child {
     color: white;
+    font-weight: bold;
 }
 
 .progress-segment:hover .segment-tooltip {
