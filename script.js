@@ -248,30 +248,33 @@ function createProjectionChart() {
                 value: Number(box.querySelector('input[type="number"]').value)
             }));
 
-        return { 
-            investments: investments.reduce((sum, item) => sum + item.value, 0),
-            distractions: distractions.reduce((sum, item) => sum + item.value, 0)
+        const investmentHours = investments.reduce((sum, item) => sum + item.value, 0);
+        const distractionHours = distractions.reduce((sum, item) => sum + item.value, 0);
+
+        return {
+            investmentHours,
+            distractionHours
         };
     }
 
-    const { investments, distractions } = collectProjectionData();
+    const { investmentHours, distractionHours } = collectProjectionData();
 
     // Projection calculation (total hours over 6 months)
     const projectedData = {
         labels: ['Current', 'Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
-        investments: [investments],
-        distractions: [distractions]
+        investmentHours: [investmentHours],
+        distractionHours: [distractionHours]
     };
 
-    const investmentTrend = investments > distractions ? -2 : 0;
-    const distractionTrend = distractions > investments ? 2 : 0;
+    const investmentTrend = investmentHours > distractionHours ? -50 : 0;
+    const distractionTrend = distractionHours > investmentHours ? 50 : 0;
 
     for (let i = 1; i < 7; i++) {
-        const lastInvestment = projectedData.investments[i-1];
-        const lastDistraction = projectedData.distractions[i-1];
+        const lastInvestment = projectedData.investmentHours[i-1];
+        const lastDistraction = projectedData.distractionHours[i-1];
         
-        projectedData.investments.push(Math.max(0, lastInvestment + (investmentTrend * i)));
-        projectedData.distractions.push(Math.max(0, lastDistraction + (distractionTrend * i)));
+        projectedData.investmentHours.push(Math.max(0, lastInvestment + (investmentTrend * i)));
+        projectedData.distractionHours.push(Math.max(0, lastDistraction + (distractionTrend * i)));
     }
 
     const ctx = document.getElementById('projectionChart').getContext('2d');
@@ -282,7 +285,7 @@ function createProjectionChart() {
             datasets: [
                 {
                     label: 'Total Investment Hours',
-                    data: projectedData.investments.map((val, index) => val * index),
+                    data: projectedData.investmentHours,
                     borderColor: '#4CAF50',
                     backgroundColor: 'rgba(76, 175, 80, 0.2)',
                     borderWidth: 2,
@@ -290,7 +293,7 @@ function createProjectionChart() {
                 },
                 {
                     label: 'Total Distraction Hours',
-                    data: projectedData.distractions.map((val, index) => val * index),
+                    data: projectedData.distractionHours,
                     borderColor: '#f44336',
                     backgroundColor: 'rgba(244, 67, 54, 0.2)',
                     borderWidth: 2,
