@@ -139,12 +139,13 @@ const subcategories = {
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
     
-    createProjectionChart();
     createHorizontalBarChart();
+    createProjectionChart();
 }
 
 function createProjectionChart() {
     const chartContainer = document.createElement('div');
+    chartContainer.id = 'projectionChartContainer';
     chartContainer.style.width = '50%';
     chartContainer.style.height = '400px';
     chartContainer.style.display = 'inline-block';
@@ -156,7 +157,7 @@ function createProjectionChart() {
     canvas.style.height = '100%';
     chartContainer.appendChild(canvas);
     
- const vizContainer = document.querySelector('.viz-container');
+    const vizContainer = document.querySelector('.viz-container');
     vizContainer.appendChild(chartContainer);
 
     function collectProjectionData() {
@@ -305,17 +306,16 @@ function createHorizontalBarChart() {
     chartContainer.style.display = 'inline-block';
     chartContainer.style.verticalAlign = 'top';
     
-      const canvas = document.createElement('canvas');
+    const canvas = document.createElement('canvas');
     canvas.id = 'horizontalBarChart';
     canvas.style.width = '100%';
     canvas.style.height = '100%';
     chartContainer.appendChild(canvas);
     
-    // Insert the chart container before the projection chart
-        const vizContainer = document.querySelector('.viz-container');
+    const vizContainer = document.querySelector('.viz-container');
+    vizContainer.innerHTML = '';
     vizContainer.appendChild(chartContainer);
 
-    // Collect data for the chart
     const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
         .map(box => ({
             name: box.querySelector('label')?.textContent.replace(':', '') || 
@@ -330,14 +330,14 @@ function createHorizontalBarChart() {
             hours: Number(box.querySelector('input[type="number"]').value)
         })).filter(item => item.hours > 0);
 
-    const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
+     const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
     const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
 
     const ctx = document.getElementById('horizontalBarChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
         indexAxis: 'y',
-            data: {
+        data: {
             labels: ['Investments', 'Distractions', 'Work', 'Sleep'],
             datasets: [{
                 data: [
@@ -347,11 +347,18 @@ function createHorizontalBarChart() {
                     sleep
                 ],
                 backgroundColor: [
-                    '#4CAF50',  // Green for Investments
-                    '#f44336',  // Red for Distractions
-                    '#FFC107',  // Yellow for Work
-                    '#2196F3'   // Blue for Sleep
-                ]
+                    'rgba(76, 175, 80, 0.2)',    // Light green for Investments
+                    'rgba(244, 67, 54, 0.2)',    // Light red for Distractions
+                    'rgba(255, 193, 7, 0.2)',    // Light yellow for Work
+                    'rgba(33, 150, 243, 0.2)'    // Light blue for Sleep
+                ],
+                borderColor: [
+                    '#4CAF50',  // Dark green for Investments
+                    '#f44336',  // Dark red for Distractions
+                    '#FFC107',  // Dark yellow for Work
+                    '#2196F3'   // Dark blue for Sleep
+                ],
+                borderWidth: 2
             }]
         },
         options: {
