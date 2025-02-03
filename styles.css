@@ -135,14 +135,20 @@ span {
 .viz-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
+    align-items: stretch;
     gap: 20px;
+    width: 100%;
 }
+
 .chart-container {
     flex: 1;
-    min-width: 400px;
-    height: 400px;
+    min-width: 0; /* Allows flex to properly resize */
+    height: 400px; /* Fixed height for both charts */
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 .time-box {
     position: relative;
