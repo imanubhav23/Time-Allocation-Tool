@@ -242,17 +242,9 @@ span {
 }
 
 .progress-segment {
-    position: relative;
-}
-
-.segment-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 5px;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    font-size: var(--font-size);
+    font-family: Arial, sans-serif;
+    color: var(--primary-color);
 }
 
 .segment-tooltip {
@@ -261,19 +253,19 @@ span {
     padding: 8px 12px;
     font-size: 12px;
     line-height: 1.4;
-}
-
-.segment-tooltip:after {
-    display: none;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .segment-tooltip h4 {
     color: white;
     border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 12px;
 }
 
 .tooltip-item {
     color: rgba(255,255,255,0.7);
+    font-size: 12px;
 }
 
 .tooltip-item span:last-child {
