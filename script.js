@@ -266,8 +266,8 @@ function createProjectionChart() {
         distractionHours: [distractionHours]
     };
 
-    const investmentTrend = investmentHours > distractionHours ? -50 : 0;
-    const distractionTrend = distractionHours > investmentHours ? 50 : 0;
+    const investmentTrend = investmentHours > distractionHours ? 50 : -50;
+    const distractionTrend = distractionHours > investmentHours ? 50 : -50;
 
     for (let i = 1; i < 7; i++) {
         const lastInvestment = projectedData.investmentHours[i-1];
