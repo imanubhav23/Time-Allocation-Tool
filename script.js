@@ -1,4 +1,3 @@
-// script.js
 function startTool() {
     document.getElementById('content').style.display = 'block';
     document.querySelector('.landing').style.display = 'none';
