@@ -144,19 +144,31 @@ Object.entries(percentages).forEach(([category, percentage]) => {
         segment.style.backgroundColor = colors[category];
         segment.textContent = `${category}: ${percentage.toFixed(0)}%`;
         
-        // Create tooltip for subcategories
-        const tooltip = document.createElement('div');
-        tooltip.className = 'segment-tooltip';
-        tooltip.innerHTML = `
-            <h4>${category}</h4>
-            ${subcategories[category].map(sub => `
-                <div class="tooltip-item">
-                    <span>${sub.name}</span>
-                    <span>${sub.hours.toFixed(0)}h (${((sub.hours/168)*100).toFixed(0)}%)</span>
-                </div>
-            `).join('')}
-        `;
-        
+const tooltip = document.createElement('div');
+tooltip.className = 'segment-tooltip';
+tooltip.innerHTML = `
+    <h4>${category}</h4>
+    ${subcategories[category].map(sub => `
+        <div class="tooltip-item">
+            <span>${sub.name}</span>
+            <span>${sub.hours.toFixed(0)}h (${((sub.hours/168)*100).toFixed(0)}%)</span>
+        </div>
+    `).join('')}
+`;
+
+// Add similar styling to graph tooltip
+segment.addEventListener('mouseenter', () => {
+    tooltip.style.display = 'block';
+    tooltip.style.position = 'absolute';
+    tooltip.style.bottom = '-100%';
+    tooltip.style.left = '0';
+});
+
+segment.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+});
+
+
         segment.appendChild(tooltip);
         timeBar.appendChild(segment);
     }
