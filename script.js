@@ -389,9 +389,6 @@ function createHorizontalBarChart() {
                 title: {
                     display: true,
                     text: 'Weekly Time Allocation Breakdown',
-                    font: {
-                        size: 16
-                    }
                 },
                 legend: {
                     display: false
