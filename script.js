@@ -304,7 +304,6 @@ function createHorizontalBarChart() {
     chartContainer.style.width = '50%';
     chartContainer.style.height = '400px';
     chartContainer.style.display = 'inline-block';
-    // chartContainer.style.verticalAlign = 'top';
     
     const canvas = document.createElement('canvas');
     canvas.id = 'horizontalBarChart';
@@ -329,8 +328,31 @@ function createHorizontalBarChart() {
             hours: Number(box.querySelector('input[type="number"]').value)
         })).filter(item => item.hours > 0);
 
-     const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
+    const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
     const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
+
+    const colorScheme = {
+        Investments: {
+            backgroundColor: 'rgba(76, 175, 80, 0.2)',    // Light green
+            borderColor: '#4CAF50',  // Dark green
+            description: 'Growth-oriented activities like learning, personal development, and relationships'
+        },
+        Distractions: {
+            backgroundColor: 'rgba(244, 67, 54, 0.2)',    // Light red
+            borderColor: '#f44336',  // Dark red
+            description: 'Activities that don\'t contribute to personal growth'
+        },
+        Work: {
+            backgroundColor: 'rgba(255, 193, 7, 0.2)',    // Light yellow
+            borderColor: '#FFC107',  // Dark yellow
+            description: 'Productive work-related activities'
+        },
+        Sleep: {
+            backgroundColor: 'rgba(33, 150, 243, 0.2)',    // Light blue
+            borderColor: '#2196F3',  // Dark blue
+            description: 'Rest and recovery time'
+        }
+    };
 
     const ctx = document.getElementById('horizontalBarChart').getContext('2d');
     new Chart(ctx, {
@@ -346,16 +368,16 @@ function createHorizontalBarChart() {
                     sleep
                 ],
                 backgroundColor: [
-                    'rgba(76, 175, 80, 0.2)',    // Light green for Investments
-                    'rgba(244, 67, 54, 0.2)',    // Light red for Distractions
-                    'rgba(255, 193, 7, 0.2)',    // Light yellow for Work
-                    'rgba(33, 150, 243, 0.2)'    // Light blue for Sleep
+                    colorScheme.Investments.backgroundColor,
+                    colorScheme.Distractions.backgroundColor,
+                    colorScheme.Work.backgroundColor,
+                    colorScheme.Sleep.backgroundColor
                 ],
                 borderColor: [
-                    '#4CAF50',  // Dark green for Investments
-                    '#f44336',  // Dark red for Distractions
-                    '#FFC107',  // Dark yellow for Work
-                    '#2196F3'   // Dark blue for Sleep
+                    colorScheme.Investments.borderColor,
+                    colorScheme.Distractions.borderColor,
+                    colorScheme.Work.borderColor,
+                    colorScheme.Sleep.borderColor
                 ],
                 borderWidth: 2
             }]
@@ -366,24 +388,37 @@ function createHorizontalBarChart() {
             plugins: {
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            const label = context[0].label;
+                            return `${label} (${colorScheme[label].description})`;
+                        },
                         label: function(context) {
                             const label = context.label;
                             const value = context.parsed.x;
                             const percentage = ((value / 168) * 100).toFixed(1);
                             
-                            // Custom tooltip content
+                            // Custom tooltip content for Investments and Distractions
                             if (label === 'Investments') {
                                 const detailHTML = investments.map(item => 
                                     `${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
-                                ).join('<br>');
-                                return `${value}h (${percentage}%)<br>${detailHTML}`;
+                                ).join('\n');
+                                return [
+                                    `Total: ${value}h (${percentage}%)`,
+                                    '---',
+                                    ...investments.map(item => 
+                                        `${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
+                                    )
+                                ];
                             }
                             
                             if (label === 'Distractions') {
-                                const detailHTML = distractions.map(item => 
-                                    `${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
-                                ).join('<br>');
-                                return `${value}h (${percentage}%)<br>${detailHTML}`;
+                                return [
+                                    `Total: ${value}h (${percentage}%)`,
+                                    '---',
+                                    ...distractions.map(item => 
+                                        `${item.name}: ${item.hours}h (${((item.hours/168)*100).toFixed(1)}%)`
+                                    )
+                                ];
                             }
                             
                             return `${value}h (${percentage}%)`;
