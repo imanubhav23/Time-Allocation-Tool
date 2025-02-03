@@ -1,3 +1,4 @@
+// script.js
 function startTool() {
     document.getElementById('content').style.display = 'block';
     document.querySelector('.landing').style.display = 'none';
@@ -142,40 +143,39 @@ function calculateResults() {
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
     
-    // Call the area chart function
-    createAreaChart();
+    createTimeVisualization();
 }
 
 function createTimeVisualization() {
-function collectData() {
-    const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
-        .map(box => ({
-            name: box.querySelector('label')?.textContent.replace(':', '') || 
-                  box.querySelector('input[type="text"]')?.value || 'Other',
-            value: Number(box.querySelector('input[type="number"]').value),
-            category: 'Investments'
-        }))
-        .filter(item => item.value > 0);
+    function collectData() {
+        const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
+            .map(box => ({
+                name: box.querySelector('label')?.textContent.replace(':', '') || 
+                      box.querySelector('input[type="text"]')?.value || 'Other',
+                value: Number(box.querySelector('input[type="number"]').value),
+                category: 'Investments'
+            }))
+            .filter(item => item.value > 0);
 
-    const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
-        .map(box => ({
-            name: box.querySelector('label')?.textContent.replace(':', '') || 
-                  box.querySelector('input[type="text"]')?.value || 'Other',
-            value: Number(box.querySelector('input[type="number"]').value),
-            category: 'Distractions'
-        }))
-        .filter(item => item.value > 0);
+        const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
+            .map(box => ({
+                name: box.querySelector('label')?.textContent.replace(':', '') || 
+                      box.querySelector('input[type="text"]')?.value || 'Other',
+                value: Number(box.querySelector('input[type="number"]').value),
+                category: 'Distractions'
+            }))
+            .filter(item => item.value > 0);
 
-    const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
-        .map(box => ({
-            name: box.querySelector('label').textContent.replace(':', ''),
-            value: Number(box.querySelector('input[type="number"]').value),
-            category: 'Fixed'
-        }))
-        .filter(item => item.value > 0);
+        const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
+            .map(box => ({
+                name: box.querySelector('label').textContent.replace(':', ''),
+                value: Number(box.querySelector('input[type="number"]').value),
+                category: 'Fixed'
+            }))
+            .filter(item => item.value > 0);
 
-    return [...investments, ...distractions, ...fixed];
-}
+        return [...investments, ...distractions, ...fixed];
+    }
 
     const data = collectData();
     
@@ -261,69 +261,3 @@ window.addEventListener('resize', () => {
         createTimeVisualization();
     }
 });
-
-function createAreaChart() {
-    try {
-        const data = collectData(); // Use the existing collectData function
-        console.log("Data for Area Chart:", data); // Debugging log
-
-        const svg = d3.select("#areaChart");
-        const width = svg.node().getBoundingClientRect().width;
-        const height = 300;
-        const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-
-        // Clear any existing chart
-        svg.selectAll("*").remove();
-
-        // Set up scales
-        const x = d3.scaleLinear()
-            .domain([0, 168]) // Total hours in a week
-            .range([margin.left, width - margin.right]);
-
-        const y = d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.value)])
-            .range([height - margin.bottom, margin.top]);
-
-        // Create the area generator
-        const area = d3.area()
-            .x((d, i) => x(i * (168 / data.length)))
-            .y0(height - margin.bottom)
-            .y1(d => y(d.value));
-
-        // Append the area path
-        svg.append("path")
-            .datum(data)
-            .attr("class", "area")
-            .attr("d", area)
-            .on("mouseover", (event, d) => {
-                tooltip.style("display", "block");
-            })
-            .on("mousemove", (event, d) => {
-                const [xPos, yPos] = d3.pointer(event);
-                const index = Math.floor((xPos - margin.left) / (width - margin.left - margin.right) * data.length);
-                const activity = data[index];
-                tooltip
-                    .html(`${activity.name}: ${activity.value}h`)
-                    .style("left", `${xPos + 10}px`)
-                    .style("top", `${yPos}px`);
-            })
-            .on("mouseout", () => {
-                tooltip.style("display", "none");
-            });
-
-        // Append axes
-        svg.append("g")
-            .attr("transform", `translate(0,${height - margin.bottom})`)
-            .call(d3.axisBottom(x).ticks(7).tickFormat(d => `${d}h`));
-
-        svg.append("g")
-            .attr("transform", `translate(${margin.left},0)`)
-            .call(d3.axisLeft(y));
-
-        // Append tooltip
-        const tooltip = d3.select("body").append("div")
-            .attr("class", "tooltip");
-    } catch (error) {
-        console.error("Error creating area chart:", error);
-    }
-}
