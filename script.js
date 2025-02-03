@@ -146,9 +146,9 @@ const subcategories = {
 function createProjectionChart() {
     const chartContainer = document.createElement('div');
     chartContainer.id = 'projectionChartContainer';
-    // chartContainer.style.width = '50%';
-    // chartContainer.style.height = '400px';
-    // chartContainer.style.display = 'inline-block';
+    chartContainer.style.width = '50%';
+    chartContainer.style.height = '400px';
+    chartContainer.style.display = 'inline-block';
     // chartContainer.style.verticalAlign = 'top';
     
     const canvas = document.createElement('canvas');
@@ -301,9 +301,9 @@ window.addEventListener('resize', () => {
 function createHorizontalBarChart() {
     const chartContainer = document.createElement('div');
     chartContainer.id = 'horizontalBarChartContainer';
-    // chartContainer.style.width = '50%';
-    // chartContainer.style.height = '400px';
-    // chartContainer.style.display = 'inline-block';
+    chartContainer.style.width = '50%';
+    chartContainer.style.height = '400px';
+    chartContainer.style.display = 'inline-block';
     // chartContainer.style.verticalAlign = 'top';
     
     const canvas = document.createElement('canvas');
