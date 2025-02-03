@@ -250,8 +250,8 @@ span {
 .segment-tooltip {
     background-color: #24292e;
     border: none;
-    padding: 8px 12px;
-    font-size: var(--font-size);
+    padding: 4px 8px;
+    font-size: 5px;
     font-family: Arial, sans-serif;
     line-height: 1.4;
     border-radius: 4px;
