@@ -125,18 +125,11 @@ span {
 
 .viz-container {
     display: flex;
-    justify-content: space-between;
     align-items: stretch;
     gap: 20px;
     width: 100%;
-}
-
-/* .viz-container > div {
-    flex: 1;
-    min-width: 0;
     height: 400px;
-    width: 50%;
-} */
+}
 
 .insight {
     text-align: center;
