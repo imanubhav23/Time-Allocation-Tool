@@ -148,35 +148,35 @@ function calculateResults() {
 }
 
 function createTimeVisualization() {
-    function collectData() {
-        const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label')?.textContent.replace(':', '') || 
-                      box.querySelector('input[type="text"]')?.value || 'Other',
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Investments'
-            }))
-            .filter(item => item.value > 0);
+function collectData() {
+    const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
+        .map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other',
+            value: Number(box.querySelector('input[type="number"]').value),
+            category: 'Investments'
+        }))
+        .filter(item => item.value > 0);
 
-        const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label')?.textContent.replace(':', '') || 
-                      box.querySelector('input[type="text"]')?.value || 'Other',
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Distractions'
-            }))
-            .filter(item => item.value > 0);
+    const distractions = Array.from(document.querySelectorAll('#distractions-list .activity-box'))
+        .map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other',
+            value: Number(box.querySelector('input[type="number"]').value),
+            category: 'Distractions'
+        }))
+        .filter(item => item.value > 0);
 
-        const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
-            .map(box => ({
-                name: box.querySelector('label').textContent.replace(':', ''),
-                value: Number(box.querySelector('input[type="number"]').value),
-                category: 'Fixed'
-            }))
-            .filter(item => item.value > 0);
+    const fixed = Array.from(document.querySelectorAll('.fixed-activities .activity-box'))
+        .map(box => ({
+            name: box.querySelector('label').textContent.replace(':', ''),
+            value: Number(box.querySelector('input[type="number"]').value),
+            category: 'Fixed'
+        }))
+        .filter(item => item.value > 0);
 
-        return [...investments, ...distractions, ...fixed];
-    }
+    return [...investments, ...distractions, ...fixed];
+}
 
     const data = collectData();
     
@@ -266,6 +266,8 @@ window.addEventListener('resize', () => {
 function createAreaChart() {
     try {
         const data = collectData(); // Use the existing collectData function
+        console.log("Data for Area Chart:", data); // Debugging log
+
         const svg = d3.select("#areaChart");
         const width = svg.node().getBoundingClientRect().width;
         const height = 300;
