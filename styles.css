@@ -140,15 +140,10 @@ span {
     width: 100%;
 }
 
-.chart-container {
+.viz-container > canvas {
     flex: 1;
-    min-width: 0; /* Allows flex to properly resize */
-    height: 400px; /* Fixed height for both charts */
-}
-
-.chart-container canvas {
-    width: 100% !important;
-    height: 100% !important;
+    min-width: 0;
+    height: 400px;
 }
 .time-box {
     position: relative;
