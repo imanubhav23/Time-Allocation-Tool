@@ -145,16 +145,19 @@ const subcategories = {
 
 function createProjectionChart() {
     const chartContainer = document.createElement('div');
-    chartContainer.id = 'projectionChartContainer';
-    chartContainer.style.width = '100%';
+    chartContainer.style.width = '50%';
     chartContainer.style.height = '400px';
-    chartContainer.style.marginTop = '20px';
+    chartContainer.style.display = 'inline-block';
+    chartContainer.style.verticalAlign = 'top';
     
     const canvas = document.createElement('canvas');
     canvas.id = 'projectionChart';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
     chartContainer.appendChild(canvas);
     
-    document.querySelector('.viz-container').appendChild(chartContainer);
+ const vizContainer = document.querySelector('.viz-container');
+    vizContainer.appendChild(chartContainer);
 
     function collectProjectionData() {
         const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
@@ -297,17 +300,21 @@ window.addEventListener('resize', () => {
 function createHorizontalBarChart() {
     const chartContainer = document.createElement('div');
     chartContainer.id = 'horizontalBarChartContainer';
-    chartContainer.style.width = '100%';
-    chartContainer.style.height = '300px';
-    chartContainer.style.marginTop = '20px';
+    chartContainer.style.width = '50%';
+    chartContainer.style.height = '400px';
+    chartContainer.style.display = 'inline-block';
+    chartContainer.style.verticalAlign = 'top';
     
-    const canvas = document.createElement('canvas');
+      const canvas = document.createElement('canvas');
     canvas.id = 'horizontalBarChart';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
     chartContainer.appendChild(canvas);
     
     // Insert the chart container before the projection chart
-    const vizContainer = document.querySelector('.viz-container');
-    vizContainer.insertBefore(chartContainer, vizContainer.firstChild);
+        const vizContainer = document.querySelector('.viz-container');
+    vizContainer.innerHTML = '';
+    vizContainer.appendChild(chartContainer);
 
     // Collect data for the chart
     const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
