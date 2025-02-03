@@ -1,4 +1,3 @@
-// script.js
 function startTool() {
     document.getElementById('content').style.display = 'block';
     document.querySelector('.landing').style.display = 'none';
@@ -143,10 +142,10 @@ function calculateResults() {
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
     
-    createTimeDistributionGraph();
+    createTimeVisualization();
 }
 
-function createTimeDistributionGraph() {
+function createTimeVisualization() {
     function collectData() {
         const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
             .map(box => ({
@@ -258,42 +257,6 @@ function generateInsights(data, categoryTotals) {
 
 window.addEventListener('resize', () => {
     if (document.getElementById('results').style.display === 'block') {
-        createTimeDistributionGraph();
+        createTimeVisualization();
     }
 });
-
-function createTimeDistributionGraph() {
-    const ctx = document.getElementById('timeDistributionChart').getContext('2d');
-
-    const data = {
-        labels: ['Investments', 'Distractions', 'Sleep', 'Work'],
-        datasets: [{
-            label: 'Weekly Time Distribution (Hours)',
-            data: [
-                categoryTotals['Investments'] || 0, 
-                categoryTotals['Distractions'] || 0, 
-                categoryTotals['Sleep'] || 0, 
-                categoryTotals['Work'] || 0
-            ],
-            backgroundColor: ['#4CAF50', '#f44336', '#2196F3', '#FFC107']
-        }]
-    };
-
-    if (window.timeChart) {
-        window.timeChart.destroy();
-    }
-
-    window.timeChart = new Chart(ctx, {
-        type: 'bar',
-        data: data,
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 168
-                }
-            }
-        }
-    });
-}
