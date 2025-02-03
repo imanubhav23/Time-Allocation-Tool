@@ -313,7 +313,6 @@ function createHorizontalBarChart() {
     chartContainer.appendChild(canvas);
     
     const vizContainer = document.querySelector('.viz-container');
-    vizContainer.innerHTML = '';
     vizContainer.appendChild(chartContainer);
 
     const investments = Array.from(document.querySelectorAll('#investments-list .activity-box'))
