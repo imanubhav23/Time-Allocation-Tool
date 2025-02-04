@@ -166,3 +166,24 @@ span {
     margin: 5px 0;
     font-size: 14px;
 }
+/* Add this at the end of your existing styles.css */
+.start-btn, 
+.calculate-btn, 
+.add-btn {
+    background-color: #000;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.start-btn:hover, 
+.calculate-btn:hover, 
+.add-btn:hover {
+    background-color: #CC0000;
+}
+
+/* Update font to Oxanium */
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;500;600;700;800&display=swap');
+
+body, input, button, label, span {
+    font-family: 'Oxanium', cursive;
+}
