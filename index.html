@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Tracker Tool</title>
     <link rel="stylesheet" href="styles.css">
-        <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
     <div class="landing">
@@ -135,24 +134,12 @@
         <div class="viz-container"></div>
         <div class="insights" id="timeInsights"></div>
     </div>
-<div id="reallocation-root"></div>
-
-<!-- React Scripts -->
-    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- Your scripts -->
+<div id="reallocation-sliders"></div>
+<!-- In your HTML file, replace existing React scripts with: -->
+<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel" src="TimeReallocationSliders.js"></script>
     <script src="script.js"></script>
-    <script type="text/babel" src="TimeReallocationSliders.jsx"></script>
-    
-    <script type="text/babel">
-        ReactDOM.render(
-            <React.StrictMode>
-                <TimeReallocationSliders />
-            </React.StrictMode>,
-            document.getElementById('reallocation-root')
-        );
-    </script>
 </body>
 </html>
