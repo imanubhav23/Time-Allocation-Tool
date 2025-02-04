@@ -134,15 +134,8 @@
         <div class="viz-container"></div>
         <div class="insights" id="timeInsights"></div>
     </div>
-<div id="reallocation-sliders"></div>
-<!-- In your HTML file, replace existing React scripts with: -->
-<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/babel" src="TimeReallocationSliders.js"></script>
-    <script src="script.js"></script>
-   
-    <script type="text/babel">
+<div id="reallocation-root"></div>
+<script type="text/babel">
   ReactDOM.render(
     <React.StrictMode>
       <TimeReallocationSliders />
@@ -150,5 +143,12 @@
     document.getElementById('reallocation-root')
   );
 </script>
+<!-- In your HTML file, replace existing React scripts with: -->
+<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel" src="TimeReallocationSliders.jsx"></script>
+    <script src="script.js"></script>
+   
 </body>
 </html>
