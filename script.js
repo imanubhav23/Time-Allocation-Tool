@@ -278,11 +278,8 @@ function generateInsights(data, categoryTotals) {
     if (investmentRatio > 1) {
         insights.push(`You're investing ${investmentRatio.toFixed(0)}x more time than spending on distractions - great balance!`);
     } else if (investmentRatio < 1) {
-        insights.push(`Consider rebalancing your time - currently spending ${(1/investmentRatio).toFixed(0)}x more time on distractions than investments.`);
+        insights.push(`Currently spending ${(1/investmentRatio).toFixed(0)}x more time on distractions than investments - consider rebalancing your time.`);
     }
-
-    insights.push(`You have successfully allocated all 168 hours of your week.`);
-
     const topActivities = [...data].sort((a, b) => b.value - a.value).slice(0, 3);
     insights.push(`Your top time commitments are: ${topActivities.map(a => `${a.name} (${a.value}h)`).join(', ')}`);
 
