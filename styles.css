@@ -225,3 +225,76 @@ label {
     grid-template-columns: 1fr 1fr; /* Equal width columns */
     gap: 20px; /* Space between columns */
 }
+
+/* Responsive adjustments */
+@media screen and (max-width: 1024px) {
+    /* Tablet and smaller screen adjustments */
+    body {
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    .row {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .column {
+        width: 100%;
+    }
+
+    .activity-input {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .viz-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    /* Mobile-specific adjustments */
+    .activity-input {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .start-btn, .calculate-btn, .add-btn {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    input[type="number"], input[type="text"] {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Ensure proper scaling for mobile devices */
+* {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 320px;
+}
+
+/* Improve touch targets */
+button, input, select {
+    min-height: 44px;
+    touch-action: manipulation;
+}
