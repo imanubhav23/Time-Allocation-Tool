@@ -180,6 +180,7 @@ label {
     color: var(--primary-color);
 }
 
+/* Reallocation Number */
 .reallocation-number-bg {
     background-color: white;
     padding: 2px 6px;
@@ -188,4 +189,15 @@ label {
     display: inline-block;
     border: 3px solid #CC0000;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Saved Time Box */
+.saved-time-box {
+    border: 3px solid var(--button-hover);
+    border-radius: var(--border-radius);
+}
+
+.saved-time-text {
+    font-weight: bold;
+    color: var(--primary-color);
 }
