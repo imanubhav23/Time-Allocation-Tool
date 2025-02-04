@@ -473,6 +473,8 @@ function createTimeReallocationSliders() {
                     step="10"
                     class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-red"
                 >
+                <!-- Add this blank line -->
+                <div class="h-4"></div>
             </div>
             <div class="mb-6">
                 <div class="flex justify-between items-center mb-2">
@@ -493,12 +495,11 @@ function createTimeReallocationSliders() {
                     class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-red"
                 >
             </div>
-            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
-                <p id="savedTimeOutput">Saved Time Will Be Calculated Here</p>
+            <div class="text-center bg-white p-4 rounded-lg shadow-sm saved-time-box">
+                <p id="savedTimeOutput" class="saved-time-text">Saved Time Will Be Calculated Here</p>
             </div>
         </div>
     `;
-
     const reallocationSlider = container.querySelector('#reallocationSlider');
     const yearsSlider = container.querySelector('#yearsSlider');
     const reallocationValue = container.querySelector('#reallocationValue');
