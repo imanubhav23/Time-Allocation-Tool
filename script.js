@@ -455,50 +455,52 @@ function createHorizontalBarChart() {
 function createTimeReallocationSliders() {
     const container = document.getElementById('reallocation-sliders');
     container.innerHTML = `
-        <div class="bg-gray-100 p-6 rounded-lg shadow-sm mb-8">
-            <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                    <span>If you were to re-allocate 
-                        <span class="reallocation-number-bg">
-                            <span id="reallocationValue">10</span>
-                        </span>% of distractions to investments
-                    </span>
+        <div class="flex gap-6">
+            <div class="flex-1 bg-gray-100 p-6 rounded-lg shadow-sm">
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span>If you were to re-allocate 
+                            <span class="reallocation-number-bg">
+                                <span id="reallocationValue">10</span>
+                            </span>% of distractions to investments
+                        </span>
+                    </div>
+                    <input 
+                        type="range" 
+                        id="reallocationSlider"
+                        min="0" 
+                        max="100" 
+                        value="10"
+                        step="10"
+                        class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-red"
+                    >
+                    <div class="h-4"></div>
                 </div>
-                <input 
-                    type="range" 
-                    id="reallocationSlider"
-                    min="0" 
-                    max="100" 
-                    value="10"
-                    step="10"
-                    class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-red"
-                >
-                <div class="h-4"></div>
-            </div>
-            <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                    <span>In 
-                        <span class="reallocation-number-bg">
-                            <span id="yearsValue">1</span>
-                        </span> 
-                        years, you'd save...
-                    </span>
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span>In 
+                            <span class="reallocation-number-bg">
+                                <span id="yearsValue">1</span>
+                            </span> 
+                            years, you'd save...
+                        </span>
+                    </div>
+                    <input 
+                        type="range" 
+                        id="yearsSlider"
+                        min="0" 
+                        max="10" 
+                        value="1"
+                        step="1"
+                        class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-red"
+                    >
                 </div>
-                <input 
-                    type="range" 
-                    id="yearsSlider"
-                    min="0" 
-                    max="10" 
-                    value="1"
-                    step="1"
-                    class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-red"
-                >
-            </div>
-            <div class="text-center bg-white p-4 rounded-lg shadow-sm saved-time-box">
-                <p id="savedTimeOutput" class="saved-time-text">Saved Time Will Be Calculated Here</p>
+                <div class="text-center bg-white p-4 rounded-lg shadow-sm saved-time-box">
+                    <p id="savedTimeOutput" class="saved-time-text">Saved Time Will Be Calculated Here</p>
+                </div>
             </div>
             
-            <div class="mt-6 bg-white p-6 rounded-lg shadow-sm">
+            <div class="flex-1 bg-white p-6 rounded-lg shadow-sm">
                 <h3 class="text-xl font-bold mb-4">With that many hours, you could...</h3>
                 <div class="space-y-4">
                     <p>You can walk 
