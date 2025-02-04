@@ -558,16 +558,16 @@ function createTimeReallocationSliders() {
     }
 
     reallocationSlider.addEventListener('input', () => {
-        reallocationValue.textContent = reallocationSlider.value;
-        ();
-    });
+    reallocationValue.textContent = reallocationSlider.value;
+    calculateSavedTime();
+});
 
     yearsSlider.addEventListener('input', () => {
-        yearsValue.textContent = yearsSlider.value;
-        ();
-    });
+    yearsValue.textContent = yearsSlider.value;
+    calculateSavedTime();
+});
 
-    ();
+calculateSavedTime();
 }
 
 // Call this after results are displayed
