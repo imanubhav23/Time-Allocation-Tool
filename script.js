@@ -482,7 +482,7 @@ function createTimeReallocationSliders() {
                             <span class="reallocation-number-bg">
                                 <span id="yearsValue">1</span>
                             </span> 
-                            years, you'd save...
+                            year(s), you'd save...
                         </span>
                     </div>
                     <input 
@@ -519,7 +519,7 @@ function createTimeReallocationSliders() {
                     <p>You can learn 
                         <span class="reallocation-number-bg">
                             <span id="languagesLearned">0</span>
-                        </span> new languages.
+                        </span> new language(s).
                     </p>
                 </div>
             </div>
