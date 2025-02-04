@@ -152,10 +152,8 @@ function calculateResults() {
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
 
-    const sliderContainer = document.getElementById('reallocation-sliders');
-    if (sliderContainer) {
-        ReactDOM.render(React.createElement(TimeReallocationSliders), sliderContainer);
-    }
+attachTimeReallocationSliders();
+
 
     // Add insights to the page
     document.getElementById('timeInsights').innerHTML = generateInsights(data, categoryTotals);
@@ -452,4 +450,76 @@ function createHorizontalBarChart() {
             }
         }
     });
+}
+function createTimeReallocationSliders() {
+    const container = document.getElementById('reallocation-sliders');
+    container.innerHTML = `
+        <div class="bg-gray-100 p-6 rounded-lg shadow-sm mb-8">
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span>Reallocation Percentage: <span id="reallocationValue">35</span>%</span>
+                </div>
+                <input 
+                    type="range" 
+                    id="reallocationSlider"
+                    min="0" 
+                    max="100" 
+                    value="35"
+                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                >
+            </div>
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span>Years Ahead: <span id="yearsValue">21</span> years</span>
+                </div>
+                <input 
+                    type="range" 
+                    id="yearsSlider"
+                    min="1" 
+                    max="50" 
+                    value="21"
+                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                >
+            </div>
+            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                <p id="savedTimeOutput">Saved Time Will Be Calculated Here</p>
+            </div>
+        </div>
+    `;
+
+    const reallocationSlider = container.querySelector('#reallocationSlider');
+    const yearsSlider = container.querySelector('#yearsSlider');
+    const reallocationValue = container.querySelector('#reallocationValue');
+    const yearsValue = container.querySelector('#yearsValue');
+    const savedTimeOutput = container.querySelector('#savedTimeOutput');
+
+    function calculateSavedTime() {
+        const distractionHours = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
+            .reduce((sum, input) => sum + Number(input.value), 0);
+        
+        const weeklyHoursSaved = (distractionHours * reallocationSlider.value) / 100;
+        const totalHoursSaved = weeklyHoursSaved * 52 * yearsSlider.value;
+        const totalDaysSaved = Math.floor(totalHoursSaved / 24);
+        
+        savedTimeOutput.textContent = `${Math.floor(totalHoursSaved)} hours ≈ ${totalDaysSaved} days`;
+    }
+
+    reallocationSlider.addEventListener('input', () => {
+        reallocationValue.textContent = reallocationSlider.value;
+        calculateSavedTime();
+    });
+
+    yearsSlider.addEventListener('input', () => {
+        yearsValue.textContent = yearsSlider.value;
+        calculateSavedTime();
+    });
+
+    calculateSavedTime();
+}
+
+// Call this after results are displayed
+function attachTimeReallocationSliders() {
+    if (document.getElementById('results').style.display === 'block') {
+        createTimeReallocationSliders();
+    }
 }
