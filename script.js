@@ -58,6 +58,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     updateTotal();
+    
+    const sliderContainer = document.getElementById('reallocation-sliders');
+    if (sliderContainer) {
+        ReactDOM.render(React.createElement(TimeReallocationSliders), sliderContainer);
+    }
 });
 
 function addNewActivity(listId) {
