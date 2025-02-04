@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&display=swap');
+
 :root {
     --primary-color: #333333;
     --accent-color: #CC0000;
@@ -9,8 +11,6 @@
     --font-size-base: 16px;
     --border-radius: 5px;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&display=swap');
 
 body {
     font-family: Arial, sans-serif;
