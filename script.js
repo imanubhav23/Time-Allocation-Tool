@@ -576,3 +576,27 @@ function attachTimeReallocationSliders() {
         createTimeReallocationSliders();
     }
 }
+
+// Add event listeners for touch events to improve mobile interactivity
+document.addEventListener('DOMContentLoaded', function() {
+    // Prevent double-tap zoom on inputs
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('touchend', function(e) {
+            e.preventDefault();
+        });
+    });
+
+    // Ensure sliders work smoothly on mobile
+    const sliders = document.querySelectorAll('input[type="range"]');
+    sliders.forEach(slider => {
+        slider.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = this.getBoundingClientRect();
+            const percent = (touch.clientX - rect.left) / rect.width;
+            this.value = percent * (this.max - this.min) + Number(this.min);
+            this.dispatchEvent(new Event('input'));
+        });
+    });
+});
