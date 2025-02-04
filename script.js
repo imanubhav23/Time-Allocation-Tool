@@ -101,30 +101,26 @@ function calculateResults() {
     const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
     const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
     
-    const percentages = {
-        investments: (investments / 168) * 100,
-        distractions: (distractions / 168) * 100,
-        sleep: (sleep / 168) * 100,
-        work: (work / 168) * 100
-    };
+    // Collect all detailed data for insights
+    const data = [
+        ...Array.from(document.querySelectorAll('#investments-list .activity-box')).map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other Investment',
+            value: Number(box.querySelector('input[type="number"]').value)
+        })),
+        ...Array.from(document.querySelectorAll('#distractions-list .activity-box')).map(box => ({
+            name: box.querySelector('label')?.textContent.replace(':', '') || 
+                  box.querySelector('input[type="text"]')?.value || 'Other Distraction',
+            value: Number(box.querySelector('input[type="number"]').value)
+        }))
+    ];
 
- // Collect subcategory details
-const subcategories = {
-    investments: Array.from(document.querySelectorAll('#investments-list .activity-box')).map(box => ({
-        name: box.querySelector('label')?.textContent.replace(':', '') || 
-              box.querySelector('input[type="text"]')?.value || 'Other',
-        hours: Number(box.querySelector('input[type="number"]').value)
-    })).filter(item => item.hours > 0),
-    
-    distractions: Array.from(document.querySelectorAll('#distractions-list .activity-box')).map(box => ({
-        name: box.querySelector('label')?.textContent.replace(':', '') || 
-              box.querySelector('input[type="text"]')?.value || 'Other',
-        hours: Number(box.querySelector('input[type="number"]').value)
-    })).filter(item => item.hours > 0),
-    
-    sleep: [{name: 'Sleep', hours: Number(document.querySelector('.fixed-activities input[value="56"]').value)}],
-    work: [{name: 'Work', hours: Number(document.querySelector('.fixed-activities input[value="40"]').value)}]
-};
+    const categoryTotals = {
+        'Investments': investments,
+        'Distractions': distractions,
+        'Work': work,
+        'Sleep': sleep
+    };
 
     const ratio = distractions / investments;
     const insight = document.getElementById('insight');
@@ -139,10 +135,12 @@ const subcategories = {
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
     
+    // Add insights to the page
+    document.getElementById('timeInsights').innerHTML = generateInsights(data, categoryTotals);
+    
     createHorizontalBarChart();
     createProjectionChart();
 }
-
 function createProjectionChart() {
     const chartContainer = document.createElement('div');
     chartContainer.id = 'projectionChartContainer';
