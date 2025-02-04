@@ -451,34 +451,37 @@ function createHorizontalBarChart() {
         }
     });
 }
+
 function createTimeReallocationSliders() {
     const container = document.getElementById('reallocation-sliders');
     container.innerHTML = `
         <div class="bg-gray-100 p-6 rounded-lg shadow-sm mb-8">
             <div class="mb-6">
                 <div class="flex justify-between items-center mb-2">
-                    <span>Reallocation Percentage: <span id="reallocationValue">35</span>%</span>
+                    <span>If you were to re-allocate <span id="reallocationValue">30</span>% of distractions to investments</span>
                 </div>
                 <input 
                     type="range" 
                     id="reallocationSlider"
                     min="0" 
                     max="100" 
-                    value="35"
-                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    value="30"
+                    step="10"
+                    class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 >
             </div>
             <div class="mb-6">
                 <div class="flex justify-between items-center mb-2">
-                    <span>Years Ahead: <span id="yearsValue">21</span> years</span>
+                    <span>In <span id="yearsValue">5</span> years, you'd save...</span>
                 </div>
                 <input 
                     type="range" 
                     id="yearsSlider"
-                    min="1" 
-                    max="50" 
-                    value="21"
-                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    min="0" 
+                    max="10" 
+                    value="5"
+                    step="1"
+                    class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 >
             </div>
             <div class="text-center bg-white p-4 rounded-lg shadow-sm">
