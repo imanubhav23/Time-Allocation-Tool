@@ -1,6 +1,7 @@
 function startTool() {
     document.getElementById('content').style.display = 'block';
     document.querySelector('.landing').style.display = 'none';
+    updateTotal();
 }
 
 function updateTotal() {
@@ -14,8 +15,15 @@ function updateTotal() {
         .reduce((sum, input) => sum + Number(input.value), 0);
 
     const total = investments + distractions + fixed;
-    document.getElementById('totalHoursSpent').textContent = total;
+    let totalHoursSpan = document.getElementById('totalHoursSpent');
+    if (!totalHoursSpan) {
+        totalHoursSpan = document.createElement('span');
+        totalHoursSpan.id = 'totalHoursSpent';
+        totalHoursSpan.style.display = 'none';
+        document.body.appendChild(totalHoursSpan);
+    }
     
+    totalHoursSpan.textContent = total;    
     const errorMessage = document.getElementById('error-message');
     const calculateBtn = document.querySelector('.calculate-btn');
     
@@ -82,6 +90,14 @@ function addNewActivity(listId) {
 }
 
 function calculateResults() {
+    let totalHoursSpan = document.getElementById('totalHoursSpent');
+    if (!totalHoursSpan) {
+        totalHoursSpan = document.createElement('span');
+        totalHoursSpan.id = 'totalHoursSpent';
+        totalHoursSpan.style.display = 'none';
+        document.body.appendChild(totalHoursSpan);
+    }
+        
     const total = Number(document.getElementById('totalHoursSpent').textContent);
     if (total !== 168) {
         const errorMessage = document.getElementById('error-message');
