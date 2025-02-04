@@ -455,8 +455,8 @@ function createHorizontalBarChart() {
 function createTimeReallocationSliders() {
     const container = document.getElementById('reallocation-sliders');
     container.innerHTML = `
-        <div class="flex gap-6">
-            <div class="flex-1 bg-gray-100 p-6 rounded-lg shadow-sm">
+       <div class="grid grid-cols-2 gap-6">
+            <div class="bg-gray-100 p-6 rounded-lg shadow-sm">
                 <div class="mb-6">
                     <div class="flex justify-between items-center mb-2">
                         <span>If you were to re-allocate 
@@ -500,7 +500,7 @@ function createTimeReallocationSliders() {
                 </div>
             </div>
             
-            <div class="flex-1 bg-white p-6 rounded-lg shadow-sm">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
                 <h3 class="text-xl font-bold mb-4">With that many hours, you could...</h3>
                 <div class="space-y-4">
                     <p>You can walk 
