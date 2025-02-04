@@ -85,6 +85,7 @@ function calculateResults() {
     const total = Number(document.getElementById('totalHoursSpent').textContent);
     if (total !== 168) {
         const errorMessage = document.getElementById('error-message');
+        console.log('Total hours:', total);
         errorMessage.style.display = 'block';
         errorMessage.textContent = total > 168 ? 
             `You've allocated ${total} hours. Please reduce by ${total - 168} hours to proceed.` :
