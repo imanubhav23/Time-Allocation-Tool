@@ -525,6 +525,7 @@ function createTimeReallocationSliders() {
             </div>
         </div>
     `;
+    
 
     const reallocationSlider = container.querySelector('#reallocationSlider');
     const yearsSlider = container.querySelector('#yearsSlider');
