@@ -458,30 +458,39 @@ function createTimeReallocationSliders() {
         <div class="bg-gray-100 p-6 rounded-lg shadow-sm mb-8">
             <div class="mb-6">
                 <div class="flex justify-between items-center mb-2">
-                    <span>If you were to re-allocate <span id="reallocationValue">30</span>% of distractions to investments</span>
+                    <span>If you were to re-allocate 
+                        <span class="reallocation-number-bg">
+                            <span id="reallocationValue">10</span>
+                        </span>% of distractions to investments
+                    </span>
                 </div>
                 <input 
                     type="range" 
                     id="reallocationSlider"
                     min="0" 
                     max="100" 
-                    value="30"
+                    value="10"
                     step="10"
-                    class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-red"
                 >
             </div>
             <div class="mb-6">
                 <div class="flex justify-between items-center mb-2">
-                    <span>In <span id="yearsValue">5</span> years, you'd save...</span>
+                    <span>In 
+                        <span class="reallocation-number-bg">
+                            <span id="yearsValue">1</span>
+                        </span> 
+                        years, you'd save...
+                    </span>
                 </div>
                 <input 
                     type="range" 
                     id="yearsSlider"
                     min="0" 
                     max="10" 
-                    value="5"
+                    value="1"
                     step="1"
-                    class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-red"
                 >
             </div>
             <div class="text-center bg-white p-4 rounded-lg shadow-sm">
