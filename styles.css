@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&display=swap');
 :root {
     --primary-color: #333333;
     --font-size: 16px;
+    --font-family: 'Oxanium', cursive;
 }
 
 body {
@@ -12,10 +14,12 @@ body {
     font-size: var(--font-size);
 }
 
-h1, h2 {
-    color: var(--primary-color);
-    font-size: 24px;
-    text-align: center;
+h1, h2, 
+input, button, 
+label, span, 
+.summary h3, 
+.metric {
+    font-family: var(--font-family);
 }
 
 .landing {
@@ -179,11 +183,4 @@ span {
 .calculate-btn:hover, 
 .add-btn:hover {
     background-color: #CC0000;
-}
-
-/* Update font to Oxanium */
-@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;500;600;700;800&display=swap');
-
-body, input, button, label, span {
-    font-family: 'Oxanium', cursive;
 }
