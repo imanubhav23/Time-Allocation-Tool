@@ -547,7 +547,7 @@ function createTimeReallocationSliders() {
         const totalHoursSaved = weeklyHoursSaved * 52 * yearsSlider.value;
         const totalDaysSaved = Math.floor(totalHoursSaved / 24);
         
-        savedTimeOutput.textContent = `${Math.floor(totalHoursSaved)} hours ≈ ${totalDaysSaved} days`;
+        savedTimeOutput.innerHTML = `<strong>${Math.floor(totalHoursSaved)} hours ≈ ${totalDaysSaved} days</strong>`;
 
         // Calculations for insights
         // Assuming average walking speed of 5 km/h and 3-hour practice for mastering an instrument
@@ -559,15 +559,15 @@ function createTimeReallocationSliders() {
 
     reallocationSlider.addEventListener('input', () => {
         reallocationValue.textContent = reallocationSlider.value;
-        calculateSavedTime();
+        ();
     });
 
     yearsSlider.addEventListener('input', () => {
         yearsValue.textContent = yearsSlider.value;
-        calculateSavedTime();
+        ();
     });
 
-    calculateSavedTime();
+    ();
 }
 
 // Call this after results are displayed
