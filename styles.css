@@ -186,13 +186,6 @@ label {
     border-radius: 4px;
     margin: 0 4px;
     display: inline-block;
+    border: 1px solid #CC0000;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.slider-red::-webkit-slider-thumb {
-    background-color: #CC0000 !important;
-}
-
-.slider-red::-webkit-slider-thumb:hover {
-    background-color: #990000 !important;
 }
