@@ -473,7 +473,6 @@ function createTimeReallocationSliders() {
                     step="10"
                     class="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-red"
                 >
-                <!-- Add this blank line -->
                 <div class="h-4"></div>
             </div>
             <div class="mb-6">
@@ -498,13 +497,44 @@ function createTimeReallocationSliders() {
             <div class="text-center bg-white p-4 rounded-lg shadow-sm saved-time-box">
                 <p id="savedTimeOutput" class="saved-time-text">Saved Time Will Be Calculated Here</p>
             </div>
+            
+            <div class="mt-6 bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-bold mb-4">With that many hours, you could...</h3>
+                <div class="space-y-4">
+                    <p>You can walk 
+                        <span class="reallocation-number-bg">
+                            <span id="walkingDistance">0</span>
+                        </span> kilometers, equivalent to crossing 
+                        <span class="reallocation-number-bg">
+                            <span id="countriesCrossed">0</span>
+                        </span> countries.
+                    </p>
+                    <p>You can master 
+                        <span class="reallocation-number-bg">
+                            <span id="musicalInstruments">0</span>
+                        </span> musical instruments.
+                    </p>
+                    <p>You can learn 
+                        <span class="reallocation-number-bg">
+                            <span id="languagesLearned">0</span>
+                        </span> new languages.
+                    </p>
+                </div>
+            </div>
         </div>
     `;
+
     const reallocationSlider = container.querySelector('#reallocationSlider');
     const yearsSlider = container.querySelector('#yearsSlider');
     const reallocationValue = container.querySelector('#reallocationValue');
     const yearsValue = container.querySelector('#yearsValue');
     const savedTimeOutput = container.querySelector('#savedTimeOutput');
+
+    // New elements for insights
+    const walkingDistance = container.querySelector('#walkingDistance');
+    const countriesCrossed = container.querySelector('#countriesCrossed');
+    const musicalInstruments = container.querySelector('#musicalInstruments');
+    const languagesLearned = container.querySelector('#languagesLearned');
 
     function calculateSavedTime() {
         const distractionHours = Array.from(document.querySelectorAll('#distractions-list input[type="number"]'))
@@ -515,6 +545,13 @@ function createTimeReallocationSliders() {
         const totalDaysSaved = Math.floor(totalHoursSaved / 24);
         
         savedTimeOutput.textContent = `${Math.floor(totalHoursSaved)} hours ≈ ${totalDaysSaved} days`;
+
+        // Calculations for insights
+        // Assuming average walking speed of 5 km/h and 3-hour practice for mastering an instrument
+        walkingDistance.textContent = Math.round(totalHoursSaved * 5);
+        countriesCrossed.textContent = Math.round((totalHoursSaved * 5) / 500); // Assuming average country width
+        musicalInstruments.textContent = Math.round(totalHoursSaved / 500); // 500 hours to master an instrument
+        languagesLearned.textContent = Math.round(totalHoursSaved / 600); // 600 hours to learn a language
     }
 
     reallocationSlider.addEventListener('input', () => {
