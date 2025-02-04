@@ -270,6 +270,7 @@ function createProjectionChart() {
         }
     });
 }
+
 function generateInsights(data, categoryTotals) {
     const insights = [];
     
@@ -286,19 +287,6 @@ function generateInsights(data, categoryTotals) {
     insights.push(`Your top time commitments are: ${topActivities.map(a => `${a.name} (${a.value}h)`).join(', ')}`);
 
     return `
-        <div class="summary">
-            <h3>Weekly Overview</h3>
-            ${Object.entries(categoryTotals).map(([category, hours]) => `
-                <div class="metric">
-                    <span>${category}</span>
-                    <span>${hours}h (${((hours/168)*100).toFixed(0)}%)</span>
-                </div>
-            `).join('')}
-            <div class="metric" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                <strong>Total Time</strong>
-                <strong>168h</strong>
-            </div>
-        </div>
         <div class="summary" style="margin-top: 15px;">
             <h3>Key Insights</h3>
             ${insights.map(insight => `<p style="margin: 10px 0;">${insight}</p>`).join('')}
