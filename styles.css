@@ -100,7 +100,7 @@ input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     height: 10px;
-    background: #e5e7eb;
+    background: transparent;
     border-radius: 5px;
     outline: none;
     width: 100%;
@@ -110,22 +110,22 @@ input[type="range"] {
 /* Style for Webkit browsers (Chrome, Safari) */
 input[type="range"]::-webkit-slider-runnable-track {
     width: 100%;
-    height: 10px;
-    background: #e5e7eb;
+    height: 2px;
+    background: #000000;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: none;
 }
 
 /* Style for Firefox */
 input[type="range"]::-moz-range-track {
     width: 100%;
-    height: 10px;
-    background: #e5e7eb;
+    height: 2px;
+    background: #000000;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: none;
 }
 
-/* Thumb styles remain the same but add Firefox specific */
+/* Thumb styles */
 input[type="range"]::-moz-range-thumb {
     width: 20px;
     height: 20px;
@@ -147,7 +147,7 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
     transition: background 0.3s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    margin-top: -5px; /* Centers the thumb on the track */
+    margin-top: -9px; /* Centers the thumb on the track */
 }
 
 /* Labels and Spans */
