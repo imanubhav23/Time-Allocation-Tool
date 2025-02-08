@@ -116,6 +116,7 @@ function calculateResults() {
         .reduce((sum, input) => sum + Number(input.value), 0);
     
     const sleep = Number(document.querySelector('.fixed-activities input[value="56"]').value);
+    
     const work = Number(document.querySelector('.fixed-activities input[value="40"]').value);
     
     // Collect all detailed data for insights
@@ -140,15 +141,7 @@ function calculateResults() {
     };
 
     const ratio = distractions / investments;
-    const insight = document.getElementById('insight');
-    if (distractions > investments) {
-        insight.textContent = `You spend ${ratio.toFixed(0)} times more time on distractions than investments.`;
-    } else if (investments > distractions) {
-        insight.textContent = `You spend ${(1/ratio).toFixed(0)} times more time on investments than distractions.`;
-    } else {
-        insight.textContent = `Your time is equally split between investments and distractions.`;
-    }
-
+    
     document.getElementById('results').style.display = 'block';
     document.getElementById('content').style.display = 'none';
 
