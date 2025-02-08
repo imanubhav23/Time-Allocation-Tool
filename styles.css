@@ -110,7 +110,7 @@ input[type="range"] {
 /* Style for Webkit browsers (Chrome, Safari) */
 input[type="range"]::-webkit-slider-runnable-track {
     width: 100%;
-    height: 4px;
+    height: 8px;
     background: #000000;
     border-radius: 10px;
     border: none;
@@ -119,7 +119,7 @@ input[type="range"]::-webkit-slider-runnable-track {
 /* Style for Firefox */
 input[type="range"]::-moz-range-track {
     width: 100%;
-    height: 4px;
+    height: 8px;
     background: #000000;
     border-radius: 10px;
     border: none;
