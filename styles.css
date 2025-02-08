@@ -195,15 +195,6 @@ label {
     height: 200px;
 }
 
-.insight {
-    text-align: center;
-    font-size: 18px;
-    margin: 20px 0;
-    padding: 20px;
-    background-color: var(--background-light);
-    border-radius: var(--border-radius);
-}
-
 .insights, .summary {
     background: var(--background-light);
     border-radius: var(--border-radius);
