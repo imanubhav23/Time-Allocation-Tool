@@ -103,8 +103,7 @@ input[type="range"] {
     background: transparent;
     border-radius: 5px;
     outline: none;
-    width: 100%;
-    margin: 10px 0;
+    width: 90%;
 }
 
 /* Style for Webkit browsers (Chrome, Safari) */
@@ -332,6 +331,6 @@ body {
 
 /* Improve touch targets */
 button, input, select {
-    min-height: 44px;
+    min-height: 40px;
     touch-action: manipulation;
 }
